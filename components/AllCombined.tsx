@@ -16,6 +16,7 @@ import { Label } from './ui/label';
 import Expression from './Expression';
 import ExpressionGraph from './ExpressionGraph';
 import EmotionSpiderChart from './EmotionSpider';
+import Bored from './Bored';
 
 type TabId = 'face' | 'burst' | 'prosody';
 
@@ -511,6 +512,7 @@ const AllCombined = () => {
             </div>
             {sortedEmotions?.length > 0 && <ExpressionGraph sortedEmotion={sortedEmotions} />}
             {sortedEmotions?.length > 0 && <EmotionSpiderChart sortedEmotions={sortedEmotions} />}
+            {sortedEmotions?.length > 0 && <Bored sortedEmotion={sortedEmotions} />}
         </div>
     );
 }
