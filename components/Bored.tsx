@@ -11,23 +11,37 @@ interface Props {
 
 export default function Bored({ sortedEmotion }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    const isBored = () => {
-      for (let i = 0; i < sortedEmotion.length; i++) {
-        if (sortedEmotion[i].score < 0.4) {
-          return false;
-        }
-        if (sortedEmotion[i].emotion === "Boredom" || sortedEmotion[i].emotion === "Disappointment") {
-          return true;
-        }
-      }
-      return false;
-    }
+  const [boredTime, setBoredTime] = useState(0)
 
-    if (isBored()) {
-      setIsOpen(true)
-    }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isBored = () => {
+        for (let i = 0; i < sortedEmotion.length; i++) {
+          if (sortedEmotion[i].score < 0.4) {
+            return false;
+          }
+          if (sortedEmotion[i].emotion === "Boredom" || sortedEmotion[i].emotion === "Disappointment") {
+            return true;
+          }
+        }
+        return false;
+      }
+      if (isBored()) {
+        setBoredTime(prev => prev + 1)
+      } else {
+        setBoredTime(0)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
   }, [sortedEmotion])
+
+  useEffect(() => {
+    if (boredTime >= 5) {
+      setIsOpen(true);
+    }
+  }, [boredTime]);
+
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
