@@ -11,8 +11,9 @@ import { ErrorBoundary } from "react-error-boundary"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTheme } from 'next-themes'
+import { FallbackProps } from 'react-error-boundary'
 
-function ErrorFallback({error, resetErrorBoundary}) {
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <div role="alert" className="p-4 bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100 rounded-lg">
       <h2 className="text-lg font-semibold mb-2">Something went wrong:</h2>
@@ -21,6 +22,7 @@ function ErrorFallback({error, resetErrorBoundary}) {
     </div>
   )
 }
+
 
 function DarkModeToggle() {
   const { theme, setTheme } = useTheme()
