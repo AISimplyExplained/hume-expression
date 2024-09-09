@@ -30,9 +30,23 @@ const colors = [
 ];
 
 // @ts-ignore
+
+
+
 const CustomizedDot = (props: any) => {
   const { cx, cy, payload } = props;
-  const size = 1 + (payload.score * 8);
+  // const size = 24 + (payload.score * 28);
+  let size = 0
+
+  if (payload.score <= 0.25) {
+    size = 15
+  } else if (payload.score <= 0.5) {
+    size = 30
+  } else if (payload.score <= 0.75) {
+    size = 45
+  } else {
+    size = 55
+  }
 
   let color = "hsl(210, 70%, 50%)"
   colors.forEach((val) => {
@@ -100,7 +114,7 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
       </CardHeader>
-      <CardContent className="w-full h-[500px] max-w-6xl m-2 ">
+      <CardContent className="w-full h-[700px] max-w-6xl m-2 ">
         <ResponsiveContainer width="97%" height="97%">
           <LineChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -108,12 +122,15 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
               dataKey="time"
               type="category"
               interval="preserveStartEnd"
+              className=''
+              padding={{ left: 60, right: 60 }}
             />
             <YAxis
               type="category"
               dataKey="emotion"
               domain={emotions}
               ticks={emotions}
+              padding={{ top: 60, bottom: 60 }}
             />
             <Tooltip content={({ active, payload }) => {
               if (active && payload && payload.length) {

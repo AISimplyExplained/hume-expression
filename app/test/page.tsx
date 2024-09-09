@@ -121,12 +121,16 @@ export default function LecturePage() {
     setMobileMenuOpen(false)
   }, [router])
 
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null) 
+
   const startVideoStream = async () => {
     try {
       console.log('Attempting to access camera...');
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       console.log('Camera access successful, setting up video stream...');
       streamRef.current = stream;
+      console.log("Hello God!", videoRef)
+      setMediaStream(stream)
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         console.log('Video element source set successfully');
@@ -138,6 +142,8 @@ export default function LecturePage() {
       console.error('Error accessing camera:', error);
     }
   };
+
+  useEffect(()=>{},[mediaStream, videoRef])
 
   const stopVideoStream = () => {
     if (streamRef.current) {
