@@ -35,7 +35,6 @@ const colors = [
 
 const CustomizedDot = (props: any) => {
   const { cx, cy, payload } = props;
-  // const size = 24 + (payload.score * 28);
   let size = 0
 
   if (payload.score <= 0.25) {
