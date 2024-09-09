@@ -131,10 +131,6 @@ export default function LecturePage() {
       streamRef.current = stream;
       console.log("Hello God!", videoRef)
       setMediaStream(stream)
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        console.log('Video element source set successfully');
-      }
       setIsStreaming(true);
       console.log('isStreaming set to true');
       startSendingFrames();
@@ -143,7 +139,13 @@ export default function LecturePage() {
     }
   };
 
-  useEffect(()=>{},[mediaStream, videoRef])
+  useEffect(()=>{
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.play();
+        console.log('Video element source set successfully');
+      }
+  },[mediaStream, videoRef])
 
   const stopVideoStream = () => {
     if (streamRef.current) {
