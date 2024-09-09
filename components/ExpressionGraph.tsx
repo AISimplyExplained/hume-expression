@@ -32,7 +32,7 @@ const colors = [
 // @ts-ignore
 const CustomizedDot = (props: any) => {
   const { cx, cy, payload } = props;
-  const size = 2 + (payload.score * 4);
+  const size = 1 + (payload.score * 8);
 
   let color = "hsl(210, 70%, 50%)"
   colors.forEach((val) => {
