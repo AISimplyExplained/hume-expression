@@ -103,10 +103,8 @@ export default function LecturePage() {
   const sendVideoFramesIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const navigationItems = useMemo(() => [
-    { name: "Product", href: "/lecture" },
-    { name: "Personalization", href: "/#personalization" },
-    { name: "Account", href: "/#account" },
-    { name: "Contact Us", href: "/#contact" }
+    { name: "About", href: "/lecture" },
+
   ], []);
 
   useEffect(() => {
