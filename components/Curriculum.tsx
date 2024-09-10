@@ -14,15 +14,15 @@ export interface Chapter {
   content: string;
 }
 
-export interface Module {
+export interface CourseUnit {
   id: string;
   title: string;
   chapters: Chapter[];
 }
 
 interface CurriculumProps {
-  curriculum: Module[];
-  onChapterSelect: (moduleIndex: number, chapterIndex: number) => void;
+  curriculum: CourseUnit[];
+  onChapterSelect: (courseUnitIndex: number, chapterIndex: number) => void;
   completedChapters: Set<string>;
   onChapterComplete: (chapterId: string) => void;
 }
@@ -41,39 +41,39 @@ const Curriculum: React.FC<CurriculumProps> = ({
   completedChapters,
   onChapterComplete
 }) => {
-  const [expandedModules, setExpandedModules] = useState<string[]>([]);
-  const [selectedChapter, setSelectedChapter] = useState<{ moduleId: string; chapterId: string } | null>(null);
+  const [expandedCourseUnits, setExpandedCourseUnits] = useState<string[]>([]);
+  const [selectedChapter, setSelectedChapter] = useState<{ courseUnitId: string; chapterId: string } | null>(null);
 
-  const toggleModule = useCallback((id: string) => {
-    setExpandedModules(prev =>
+  const toggleCourseUnit = useCallback((id: string) => {
+    setExpandedCourseUnits(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   }, []);
 
-  const handleChapterSelect = useCallback((moduleId: string, chapterId: string) => {
-    setSelectedChapter({ moduleId, chapterId });
-    const moduleIndex = curriculum.findIndex(m => m.id === moduleId);
-    const chapterIndex = curriculum[moduleIndex].chapters.findIndex(c => c.id === chapterId);
-    onChapterSelect(moduleIndex, chapterIndex);
+  const handleChapterSelect = useCallback((courseUnitId: string, chapterId: string) => {
+    setSelectedChapter({ courseUnitId, chapterId });
+    const courseUnitIndex = curriculum.findIndex(m => m.id === courseUnitId);
+    const chapterIndex = curriculum[courseUnitIndex].chapters.findIndex(c => c.id === chapterId);
+    onChapterSelect(courseUnitIndex, chapterIndex);
   }, [curriculum, onChapterSelect]);
 
-  const getModuleProgress = useCallback((moduleId: string) => {
-    const module = curriculum.find(m => m.id === moduleId);
-    if (!module) return 0;
-    const totalChapters = module.chapters.length;
-    const completedInModule = module.chapters.filter(c => completedChapters.has(c.id)).length;
-    return (completedInModule / totalChapters) * 100;
+  const getCourseUnitProgress = useCallback((courseUnitId: string) => {
+    const courseUnit = curriculum.find(m => m.id === courseUnitId);
+    if (!courseUnit) return 0;
+    const totalChapters = courseUnit.chapters.length;
+    const completedInCourseUnit = courseUnit.chapters.filter(c => completedChapters.has(c.id)).length;
+    return (completedInCourseUnit / totalChapters) * 100;
   }, [curriculum, completedChapters]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <h2 className="text-xl font-bold mb-4 dark:text-white">Applied AI Curriculum</h2>
       <div className="space-y-2">
-        {curriculum.map((module) => (
+        {curriculum.map((courseUnit) => (
           <Collapsible
-            key={module.id}
-            open={expandedModules.includes(module.id)}
-            onOpenChange={() => toggleModule(module.id)}
+            key={courseUnit.id}
+            open={expandedCourseUnits.includes(courseUnit.id)}
+            onOpenChange={() => toggleCourseUnit(courseUnit.id)}
           >
             <CollapsibleTrigger asChild>
               <Button
@@ -82,12 +82,12 @@ const Curriculum: React.FC<CurriculumProps> = ({
               >
                 <span className="flex items-center">
                   <BookOpen className="mr-2 h-4 w-4" />
-                  {module.title}
+                  {courseUnit.title}
                 </span>
                 <span className="flex items-center">
-                  <Progress value={getModuleProgress(module.id)} className="w-20 mr-2" />
+                  <Progress value={getCourseUnitProgress(courseUnit.id)} className="w-20 mr-2" />
                   <motion.div
-                    animate={{ rotate: expandedModules.includes(module.id) ? 180 : 0 }}
+                    animate={{ rotate: expandedCourseUnits.includes(courseUnit.id) ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     <ChevronDown className="h-4 w-4" />
@@ -96,7 +96,7 @@ const Curriculum: React.FC<CurriculumProps> = ({
               </Button>
             </CollapsibleTrigger>
             <AnimatePresence>
-              {expandedModules.includes(module.id) && (
+              {expandedCourseUnits.includes(courseUnit.id) && (
                 <CollapsibleContent
                   className="pl-4 overflow-hidden"
                   forceMount
@@ -108,7 +108,7 @@ const Curriculum: React.FC<CurriculumProps> = ({
                     transition={{ duration: 0.3, ease: 'easeInOut' }}
                   >
                     <div className="space-y-2 py-2">
-                      {module.chapters.map((chapter) => (
+                      {courseUnit.chapters.map((chapter) => (
                         <motion.div
                           key={chapter.id}
                           initial={{ opacity: 0, y: -10 }}
@@ -118,7 +118,7 @@ const Curriculum: React.FC<CurriculumProps> = ({
                           <Button
                             variant={selectedChapter?.chapterId === chapter.id ? "default" : "ghost"}
                             className="w-full justify-start relative transition-all duration-200 ease-in-out"
-                            onClick={() => handleChapterSelect(module.id, chapter.id)}
+                            onClick={() => handleChapterSelect(courseUnit.id, chapter.id)}
                           >
                             <span className="flex items-center">
                               {getChapterIcon(chapter.type)}
