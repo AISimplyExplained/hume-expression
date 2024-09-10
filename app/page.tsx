@@ -39,7 +39,7 @@ const curriculum: Module[] = [
     id: "module1",
     title: "Applied Transformer Architecture",
     chapters: [
-      { id: "1.1", title: "Introduction to Transformers", type: "video", content: "https://example.com/intro-to-transformers.mp4" },
+      { id: "1.1", title: "Introduction to Transformers", type: "video", content: "https://www.youtube.com/watch?v=wjZofJX0v4M&ab_channel=3Blue1Brown" },
       { id: "1.2", title: "Self-Attention Mechanism", type: "text", content: "The self-attention mechanism is a key component of transformer architectures..." },
       { id: "1.3", title: "Multi-Head Attention", type: "video", content: "https://example.com/multi-head-attention.mp4" },
       { id: "1.4", title: "Transformer Architecture Quiz", type: "quiz", content: JSON.stringify([{question: "What is the key component of transformer architecture?", options: ["CNN", "RNN", "Self-Attention", "LSTM"], correctAnswer: 2}]) },
