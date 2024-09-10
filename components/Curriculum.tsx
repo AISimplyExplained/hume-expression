@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { BookOpen, ChevronDown, ChevronRight, FileText, Video, HelpCircle, CheckCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { motion, AnimatePresence } from 'framer-motion';
 
 export type ChapterType = 'video' | 'text' | 'quiz';
 
@@ -77,7 +78,7 @@ const Curriculum: React.FC<CurriculumProps> = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full justify-between mb-2"
+                className="w-full justify-between mb-2 transition-all duration-300 ease-in-out"
               >
                 <span className="flex items-center">
                   <BookOpen className="mr-2 h-4 w-4" />
@@ -85,28 +86,55 @@ const Curriculum: React.FC<CurriculumProps> = ({
                 </span>
                 <span className="flex items-center">
                   <Progress value={getModuleProgress(module.id)} className="w-20 mr-2" />
-                  {expandedModules.includes(module.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  <motion.div
+                    animate={{ rotate: expandedModules.includes(module.id) ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </motion.div>
                 </span>
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 pl-4 transition-all duration-300 ease-in-out">
-              {module.chapters.map((chapter) => (
-                <Button
-                  key={chapter.id}
-                  variant={selectedChapter?.chapterId === chapter.id ? "default" : "ghost"}
-                  className="w-full justify-start relative"
-                  onClick={() => handleChapterSelect(module.id, chapter.id)}
+            <AnimatePresence>
+              {expandedModules.includes(module.id) && (
+                <CollapsibleContent
+                  className="pl-4 overflow-hidden"
+                  forceMount
                 >
-                  <span className="flex items-center">
-                    {getChapterIcon(chapter.type)}
-                    <span className="ml-2">{chapter.title}</span>
-                  </span>
-                  {completedChapters.has(chapter.id) && (
-                    <CheckCircle className="h-4 w-4 text-green-500 absolute right-2" />
-                  )}
-                </Button>
-              ))}
-            </CollapsibleContent>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    <div className="space-y-2 py-2">
+                      {module.chapters.map((chapter) => (
+                        <motion.div
+                          key={chapter.id}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Button
+                            variant={selectedChapter?.chapterId === chapter.id ? "default" : "ghost"}
+                            className="w-full justify-start relative transition-all duration-200 ease-in-out"
+                            onClick={() => handleChapterSelect(module.id, chapter.id)}
+                          >
+                            <span className="flex items-center">
+                              {getChapterIcon(chapter.type)}
+                              <span className="ml-2">{chapter.title}</span>
+                            </span>
+                            {completedChapters.has(chapter.id) && (
+                              <CheckCircle className="h-4 w-4 text-green-500 absolute right-2" />
+                            )}
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                </CollapsibleContent>
+              )}
+            </AnimatePresence>
           </Collapsible>
         ))}
       </div>
