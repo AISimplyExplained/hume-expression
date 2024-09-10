@@ -15,6 +15,8 @@ import { FallbackProps } from 'react-error-boundary'
 import Teleprompter from '@/components/Teleprompter' // Make sure this path is correct
 import { Emotion, EmotionMap } from "@/lib/data/emotion"
 import EmotionSpiderChart from "@/components/EmotionSpider"
+import Expression from "@/components/Expression"
+import ExpressionGraph from "@/components/ExpressionGraph"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
@@ -625,6 +627,7 @@ Both architectures have their strengths and are pushing the boundaries of AI in 
           </div>
         </main>
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
+        <ExpressionGraph sortedEmotion={sortedEmotions} />
       </div>
     </ErrorBoundary>
   )

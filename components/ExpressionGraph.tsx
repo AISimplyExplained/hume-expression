@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { EmotionName, emotions } from '@/lib/types';
+import { supabase } from '@/lib/utilities/supabase';
 
 
 interface Props {
@@ -65,6 +66,21 @@ const CustomizedDot = (props: any) => {
 };
 
 
+const insertData = async ({ date, emotion, score }: { date: string, emotion: string, score: number }) => {
+  const { data, error } = await supabase
+    .from('graph')
+    .insert([
+      {
+        date: date,
+        emotion: emotion,
+        score: score
+      }
+    ]);
+
+  if (error) {
+    console.error('Error inserting data:', error);
+  }
+}
 
 export default function ExpressionGraph({ sortedEmotion }: Props) {
   const [data, setData] = useState<Point[]>([]);
@@ -82,11 +98,17 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
           const emotion = sortedEmotion[i].emotion;
           for (let j = 0; j < emotions.length; j++) {
             if (emotion === emotions[j]) {
+              const date = new Date().toLocaleTimeString()
               selectedEmotion = {
-                time: new Date().toLocaleTimeString(),
+                time: date,
                 emotion: sortedEmotion[i].emotion as EmotionName,
                 score: sortedEmotion[i].score
               }
+              insertData({
+                date: date,
+                emotion: selectedEmotion.emotion,
+                score: selectedEmotion.score
+              }).then(() => { })
               break;
             }
           }
@@ -99,9 +121,9 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
           return prevData;
         }
 
-
-        const newData = [...prevData, selectedEmotion];
-        return newData.slice(-8);
+        // const newData = [...prevData, selectedEmotion];
+        // return newData.slice(-8);
+        return []
       });
     }, 1000);
 
@@ -109,52 +131,53 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
   }, [sortedEmotion]);
 
   return (
-    <Card className="w-full h-full max-w-6xl m-2 bg-gradient-to-br from-blue-50 to-purple-50">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
-      </CardHeader>
-      <CardContent className="w-full h-[700px] max-w-6xl m-2 ">
-        <ResponsiveContainer width="97%" height="97%">
-          <LineChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 80 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="time"
-              type="category"
-              interval="preserveStartEnd"
-              className=''
-              padding={{ left: 60, right: 60 }}
-            />
-            <YAxis
-              type="category"
-              dataKey="emotion"
-              domain={emotions}
-              ticks={emotions}
-              padding={{ top: 60, bottom: 60 }}
-            />
-            <Tooltip content={({ active, payload }) => {
-              if (active && payload && payload.length) {
-                return (
-                  <div className="custom-tooltip bg-white p-2 border border-gray-300">
-                    <p>{`Time: ${payload[0].payload.time}`}</p>
-                    <p>{`Emotion: ${payload[0].payload.emotion}`}</p>
-                    <p>{`Score: ${payload[0].payload.score.toFixed(2)}`}</p>
-                  </div>
-                );
-              }
-              return null;
-            }} />
-            <Line
-              type="monotone"
-              dataKey="emotion"
-              stroke="hsl(210, 70%, 50%)"
-              strokeWidth={2}
-              dot={<CustomizedDot />}
-              isAnimationActive={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <></>
+    // <Card className="w-full h-full max-w-6xl m-2 bg-gradient-to-br from-blue-50 to-purple-50">
+    //   <CardHeader>
+    //     <CardTitle className="text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
+    //   </CardHeader>
+    //   <CardContent className="w-full h-[700px] max-w-6xl m-2 ">
+    //     <ResponsiveContainer width="97%" height="97%">
+    //       <LineChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 80 }}>
+    //         <CartesianGrid strokeDasharray="3 3" />
+    //         <XAxis
+    //           dataKey="time"
+    //           type="category"
+    //           interval="preserveStartEnd"
+    //           className=''
+    //           padding={{ left: 60, right: 60 }}
+    //         />
+    //         <YAxis
+    //           type="category"
+    //           dataKey="emotion"
+    //           domain={emotions}
+    //           ticks={emotions}
+    //           padding={{ top: 60, bottom: 60 }}
+    //         />
+    //         <Tooltip content={({ active, payload }) => {
+    //           if (active && payload && payload.length) {
+    //             return (
+    //               <div className="custom-tooltip bg-white p-2 border border-gray-300">
+    //                 <p>{`Time: ${payload[0].payload.time}`}</p>
+    //                 <p>{`Emotion: ${payload[0].payload.emotion}`}</p>
+    //                 <p>{`Score: ${payload[0].payload.score.toFixed(2)}`}</p>
+    //               </div>
+    //             );
+    //           }
+    //           return null;
+    //         }} />
+    //         <Line
+    //           type="monotone"
+    //           dataKey="emotion"
+    //           stroke="hsl(210, 70%, 50%)"
+    //           strokeWidth={2}
+    //           dot={<CustomizedDot />}
+    //           isAnimationActive={false}
+    //         />
+    //       </LineChart>
+    //     </ResponsiveContainer>
+    //   </CardContent>
+    // </Card>
   );
 
 }
