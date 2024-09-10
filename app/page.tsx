@@ -41,7 +41,7 @@ const curriculum: Module[] = [
     chapters: [
       { id: "1.1", title: "Introduction to Transformers", type: "video", content: "https://www.youtube.com/watch?v=wjZofJX0v4M&ab_channel=3Blue1Brown" },
       { id: "1.2", title: "Self-Attention Mechanism", type: "text", content: "The self-attention mechanism is a key component of transformer architectures..." },
-      { id: "1.3", title: "Multi-Head Attention", type: "video", content: "https://example.com/multi-head-attention.mp4" },
+      { id: "1.3", title: "Multi-Head Attention", type: "video", content: "https://www.youtube.com/watch?v=lmepFoddjgQ&ab_channel=learningcurve" },
       { id: "1.4", title: "Transformer Architecture Quiz", type: "quiz", content: JSON.stringify([{question: "What is the key component of transformer architecture?", options: ["CNN", "RNN", "Self-Attention", "LSTM"], correctAnswer: 2}]) },
     ]
   },
@@ -200,16 +200,41 @@ export default function LecturePage() {
     }, 1000);
   };
 
+  const getYouTubeEmbedUrl = (url: string) => {
+    const videoId = url.split('v=')[1];
+    const ampersandPosition = videoId.indexOf('&');
+    if (ampersandPosition !== -1) {
+      return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+  };
+
   const renderChapterContent = () => {
     if (!currentChapter) return null;
 
     switch (currentChapter.type) {
       case 'video':
-        return (
-          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-            <video src={currentChapter.content} controls className="w-full h-full" />
-          </div>
-        );
+        if (currentChapter.content.includes('youtube.com')) {
+          const embedUrl = getYouTubeEmbedUrl(currentChapter.content);
+          return (
+            <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+              <iframe
+                src={embedUrl}
+                title={currentChapter.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          );
+        } else {
+          return (
+            <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+              <video src={currentChapter.content} controls className="w-full h-full" />
+            </div>
+          );
+        }
       case 'text':
         return (
           <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
@@ -227,6 +252,7 @@ export default function LecturePage() {
         return null;
     }
   };
+
 
   const renderNavigationItems = useMemo(() => (
     navigationItems.map((item) => (
