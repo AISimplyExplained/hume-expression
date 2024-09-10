@@ -60,21 +60,22 @@ const EmotionSpiderChart: React.FC<Props> = ({ sortedEmotions }) => {
   }));
 
   return (
-    <Card className='w-full h-full max-w-6xl m-2 bg-gradient-to-br from-blue-50 to-purple-50'>
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-gray-800">Emotion Spider</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={500}>
-          <RadarChart cx="50%" cy="50%" outerRadius="90%" data={data}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey="subject" />
-            <PolarRadiusAxis angle={90} domain={[0, 1]} />
-            <Radar name="Emotions" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.7} />
-          </RadarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    // <Card className='w-full h-full max-w-6xl m-2 bg-gradient-to-br from-blue-50 to-purple-50'>
+    //   <CardHeader>
+    //     <CardTitle className="text-2xl font-bold text-center text-gray-800">Emotion Spider</CardTitle>
+    //   </CardHeader>
+    //   <CardContent>
+    //     <ResponsiveContainer width="100%" height={500}>
+    //       <RadarChart cx="50%" cy="50%" outerRadius="90%" data={data}>
+    //         <PolarGrid />
+    //         <PolarAngleAxis dataKey="subject" />
+    //         <PolarRadiusAxis angle={90} domain={[0, 1]} />
+    //         <Radar name="Emotions" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.7} />
+    //       </RadarChart>
+    //     </ResponsiveContainer>
+    //   </CardContent>
+    // </Card>
+    <></>
   );
 };
 

@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation"
 import { useTheme } from 'next-themes'
 import { FallbackProps } from 'react-error-boundary'
 import Teleprompter from '@/components/Teleprompter' // Make sure this path is correct
+import { Emotion, EmotionMap } from "@/lib/data/emotion"
+import EmotionSpiderChart from "@/components/EmotionSpider"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
@@ -72,7 +74,7 @@ export default function LecturePage() {
     { name: "Contact Us", href: "/#contact" }
   ], [])
 
-const lessonContent = useMemo(() => ({
+  const lessonContent = useMemo(() => ({
     "Applied Transformer Architecture": `
 # Applied Transformer Architecture
 
@@ -301,6 +303,162 @@ Both architectures have their strengths and are pushing the boundaries of AI in 
     setMobileMenuOpen(false)
   }, [router])
 
+  const socketRef = useRef<WebSocket | null>(null);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [socketStatus, setSocketStatus] = useState("Connecting...");
+  const serverReadyRef = useRef(true);
+  const activeTabRef = useRef<string>('face');
+  const [emotionMap, setEmotionMap] = useState<EmotionMap | null>(null);
+  const [warning, setWarning] = useState<string>("");
+  const isStreamingRef = useRef<Boolean | null>(false);
+
+  useEffect(() => {
+    console.log("Mounting component");
+    console.log("Connecting to server");
+    connect();
+
+    return () => {
+      console.log("Tearing down component");
+      disconnect();
+    };
+  }, []);
+
+
+  const connect = async () => {
+    const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
+
+    serverReadyRef.current = true;
+    console.log(`Connecting to websocket... (using ${socketUrl})`);
+
+    setSocketStatus('Connecting...')
+
+    socketRef.current = new WebSocket(socketUrl);
+    socketRef.current.onopen = socketOnOpen;
+    socketRef.current.onmessage = socketOnMessage;
+    socketRef.current.onclose = socketOnClose;
+    socketRef.current.onerror = socketOnError;
+  }
+
+  const socketOnOpen = async () => {
+    console.log("Connected to websocket");
+    setSocketStatus("Connected");
+    setIsSocketConnected(true);
+  }
+
+  const socketOnMessage = async (event: MessageEvent) => {
+    console.log("event", event)
+    const data = JSON.parse(event.data as string);
+    if (data[activeTabRef.current] && data[activeTabRef.current].predictions && data[activeTabRef.current].predictions.length > 0) {
+      const emotions: Emotion[] = data[activeTabRef.current].predictions[0].emotions;
+      console.log(data)
+      const map: EmotionMap = {};
+      emotions.forEach((emotion: Emotion) => map[emotion.name] = emotion.score);
+      setEmotionMap(map);
+    }
+    else {
+      const warning = data[activeTabRef.current]?.warning || "";
+      console.log("warning:", warning)
+      setWarning(warning)
+      setEmotionMap(null)
+    }
+
+  }
+
+  const socketOnClose = async (event: CloseEvent) => {
+    setSocketStatus('Disconnected');
+    disconnect();
+    console.log("Socket closed");
+    setIsSocketConnected(false)
+  }
+
+  const socketOnError = async (event: Event) => {
+    console.error("Socket failed to connect: ", event);
+    // if(numReconnects.current < maxReconnects) {
+    //     setSocketStatus('Reconnecting');
+    //     numReconnects.current++;
+    //     connect();
+    // }
+  }
+
+  function disconnect() {
+    console.log("Stopping everything...");
+    // mountRef.current = true;
+    const socket = socketRef.current;
+
+    if (socket) {
+      console.log("Closing socket");
+      socket.close();
+      if (socket.readyState === WebSocket.CLOSING) {
+        setSocketStatus('Closing...');
+        socketRef.current = null;
+      }
+    } else console.warn("Could not close socket, not initialized yet");
+
+    stopVideoStream();
+  }
+
+  const startSendingFrames = () => {
+    let video = videoRef.current;
+    const sendVideoFrames = () => {
+      if (video && canvasRef.current && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        const context = canvasRef.current.getContext('2d');
+        if (context && video) {
+          canvasRef.current.width = video.videoWidth;
+          canvasRef.current.height = video.videoHeight;
+          context.drawImage(video, 0, 0, canvasRef.current.width, canvasRef.current.height);
+          const imageData = canvasRef.current.toDataURL('image/jpeg', 0.8);
+          const base64Data = imageData.split(',')[1];
+
+          // setCapturedImage(imageData);
+
+          // Send the image data via WebSocket
+          socketRef.current.send(JSON.stringify({
+            data: base64Data,
+            models: {
+              face: {}
+            }
+          }));
+        }
+      }
+    };
+
+    sendVideoFramesIntervalRef.current = setInterval(sendVideoFrames, 1000);
+  };
+
+  const stopVideoStream = () => {
+    console.log('Stopping video stream')
+    // Stop the sending frames interval
+    isStreamingRef.current = false;
+
+    if (streamRef.current) {
+      streamRef.current?.getTracks()?.forEach(track => track.stop());
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    // if (socketRef.current) {
+    //   socketRef.current.close();
+    // }
+    setIsStreaming(false);
+    setEmotionMap(null);
+    // Stop the interval that sends frames
+    if (sendVideoFramesIntervalRef.current) {
+      clearInterval(sendVideoFramesIntervalRef.current);
+      sendVideoFramesIntervalRef.current = null;
+    }
+  };
+
+
+  const sortedEmotions = useMemo(() => {
+    if (!emotionMap) return [];
+    return Object.entries(emotionMap)
+      .sort(([, a], [, b]) => b - a)
+      .map(([emotion, score]) => ({ emotion, score }));
+  }, [emotionMap]);
+
+  console.log("sorted emotion", sortedEmotions)
+
+
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
 
   const startVideoStream = async () => {
@@ -309,52 +467,23 @@ Both architectures have their strengths and are pushing the boundaries of AI in 
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       console.log('Camera access successful, setting up video stream...');
       streamRef.current = stream;
-      console.log("Hello God!", videoRef)
       setMediaStream(stream)
       setIsStreaming(true);
       console.log('isStreaming set to true');
-      startSendingFrames();
     } catch (error) {
       console.error('Error accessing camera:', error);
     }
   };
 
-  useEffect(()=>{
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.play();
-        console.log('Video element source set successfully');
-      }
-  },[mediaStream, videoRef])
-
-  const stopVideoStream = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-    }
+  useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.srcObject = null;
+      videoRef.current.srcObject = mediaStream;
+      videoRef.current.play();
+      console.log('Video element source set successfully');
+      startSendingFrames();
     }
-    setIsStreaming(false);
-    if (sendVideoFramesIntervalRef.current) {
-      clearInterval(sendVideoFramesIntervalRef.current);
-      sendVideoFramesIntervalRef.current = null;
-    }
-  };
+  }, [mediaStream, videoRef])
 
-  const startSendingFrames = () => {
-    sendVideoFramesIntervalRef.current = setInterval(() => {
-      if (videoRef.current && canvasRef.current) {
-        const context = canvasRef.current.getContext('2d');
-        if (context) {
-          canvasRef.current.width = videoRef.current.videoWidth;
-          canvasRef.current.height = videoRef.current.videoHeight;
-          context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-          // Here you would typically send the frame data to your server or process it
-          console.log('Sending video frame');
-        }
-      }
-    }, 1000);
-  };
 
   const renderNavigationItems = useMemo(() => (
     navigationItems.map((item) => (
@@ -495,6 +624,7 @@ Both architectures have their strengths and are pushing the boundaries of AI in 
             </div>
           </div>
         </main>
+        <EmotionSpiderChart sortedEmotions={sortedEmotions} />
       </div>
     </ErrorBoundary>
   )
