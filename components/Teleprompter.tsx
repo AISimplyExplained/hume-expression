@@ -71,7 +71,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
     <div className="w-full h-full bg-background flex flex-col">
       <div
         ref={containerRef}
-        className="flex-grow overflow-hidden bg-secondary relative"
+        className="flex-grow overflow-hidden bg-secondary relative h-[60vh] sm:h-[50vh] md:h-[40vh] lg:h-[50vh]"
       >
         <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-secondary to-transparent z-10"></div>
         <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-secondary to-transparent z-10"></div>
