@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { EmotionName } from '@/lib/types';
+import { supabase } from '@/lib/utilities/supabase';
 
 interface Emotion {
   emotion: string;
@@ -23,6 +24,25 @@ interface Props {
 }
 
 const EmotionSpiderChart: React.FC<Props> = ({ sortedEmotions }) => {
+  useEffect(() => {
+    const updateEmotionScores = async () => {
+      for (let i = 0; i < sortedEmotions.length; i++) {
+        const emotion = sortedEmotions[i].emotion;
+        const score = sortedEmotions[i].score;
+
+        const { error } = await supabase
+          .from('emotions')
+          .update({ score })
+          .eq('emotion', emotion);
+
+        if (error) {
+          console.error('Error updating emotion:', error);
+        }
+      }
+    };
+
+    updateEmotionScores();
+  }, [sortedEmotions])
   for (let i = 0; i < sortedEmotions.length; i++) {
     const emotion = sortedEmotions[i].emotion;
     for (let j = 0; j < emotions.length; j++) {
