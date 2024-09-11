@@ -83,7 +83,7 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
   const [data, setData] = useState<Point[]>([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    // const interval = setInterval(() => {
       setData(prevData => {
         if (sortedEmotion.length === 0) {
           return prevData;
@@ -122,9 +122,9 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
         // return newData.slice(-8);
         return []
       });
-    }, 1000);
+    // }, 1000);
 
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
   }, [sortedEmotion]);
 
   return (
