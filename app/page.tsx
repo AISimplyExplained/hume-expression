@@ -514,16 +514,22 @@ export default function LecturePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex items-center">
-                <Button variant="ghost" size="icon" className="mr-2 md:hidden" onClick={toggleMobileMenu} aria-label="Toggle menu">
-                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Button variant="ghost" size="icon" className="mr-2 md:hidden" onClick={toggleMobileMenu}
+                        aria-label="Toggle menu">
+                  {mobileMenuOpen ? <X className="h-6 w-6"/> : <Menu className="h-6 w-6"/>}
                 </Button>
-                <Button variant="link" onClick={() => router.push('/')} className="text-2xl font-bold dark:text-white mr-4">ADAPTIVE LEARNING</Button>
+                <Button variant="link" onClick={() => router.push('/')}
+                        className="text-2xl font-bold dark:text-white mr-4">ADAPTIVE LEARNING</Button>
                 <nav className="hidden md:flex space-x-2">
                   {renderNavigationItems}
                 </nav>
               </div>
-              <div className="flex items-center">
-                <DarkModeToggle />
+
+              <div className="flex items-center space-x-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback>AL</AvatarFallback>
+                </Avatar>
+                <DarkModeToggle/>
               </div>
             </div>
           </div>
