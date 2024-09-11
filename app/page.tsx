@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -83,7 +84,10 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>("Applied Transformer Architecture");
 
   const navigationItems = useMemo(() => [
-    { name: "About", href: "/lecture" },
+    { name: "Product", href: "#" },
+      { name: "Personalization", href: "#" },
+      { name: "Account", href: "#" },
+      { name: "Contact Us", href: "#" },
   ], []);
 
   const curriculum: Module[] = [
