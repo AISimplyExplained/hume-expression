@@ -308,6 +308,7 @@ export default function LecturePage() {
   }
 
   const startSendingFrames = () => {
+   
     let video = videoRef.current;
     const sendVideoFrames = () => {
       if (video && canvasRef.current && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -346,6 +347,9 @@ export default function LecturePage() {
 
   const startVideoStream = async () => {
     try {
+      if(!isSocketConnected) {
+        connect();
+      }
       console.log('Attempting to access camera...');
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       console.log('Camera access successful, setting up video stream...');
