@@ -12,6 +12,8 @@ import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph from "@/components/ExpressionGraph";
 import Curriculum from '@/components/Curriculum'; // Make sure to create this component
 import Quiz from "@/components/Quiz";
+import { Emotion, EmotionMap } from '@/lib/data/emotion';
+import Bored from '@/components/Bored';
 
 // Types and interfaces
 export type ChapterType = 'video' | 'text' | 'quiz';
@@ -43,23 +45,25 @@ const curriculum: Module[] = [
       { id: "1.1", title: "Introduction to Transformers", type: "video", content: "https://www.youtube.com/watch?v=wjZofJX0v4M&ab_channel=3Blue1Brown" },
       { id: "1.2", title: "Self-Attention Mechanism", type: "text", content: "The self-attention mechanism is a key component of transformer architectures..." },
       { id: "1.3", title: "Multi-Head Attention", type: "video", content: "https://www.youtube.com/watch?v=lmepFoddjgQ&ab_channel=learningcurve" },
-      { id: "1.4", title: "Transformer Architecture Quiz", type: "quiz", content: JSON.stringify([
-        {
-          question: "What is the key component of transformer architecture?",
-          options: ["CNN", "RNN", "Self-Attention", "LSTM"],
-          correctAnswer: 2
-        },
-        {
-          question: "Which of the following is NOT a common application of transformers?",
-          options: ["Natural Language Processing", "Image Classification", "Speech Recognition", "Time Series Forecasting"],
-          correctAnswer: 1
-        },
-        {
-          question: "What is the primary advantage of multi-head attention over single-head attention?",
-          options: ["Faster computation", "Ability to focus on different parts of the input", "Reduced model size", "Increased interpretability"],
-          correctAnswer: 1
-        }
-      ]) },
+      {
+        id: "1.4", title: "Transformer Architecture Quiz", type: "quiz", content: JSON.stringify([
+          {
+            question: "What is the key component of transformer architecture?",
+            options: ["CNN", "RNN", "Self-Attention", "LSTM"],
+            correctAnswer: 2
+          },
+          {
+            question: "Which of the following is NOT a common application of transformers?",
+            options: ["Natural Language Processing", "Image Classification", "Speech Recognition", "Time Series Forecasting"],
+            correctAnswer: 1
+          },
+          {
+            question: "What is the primary advantage of multi-head attention over single-head attention?",
+            options: ["Faster computation", "Ability to focus on different parts of the input", "Reduced model size", "Increased interpretability"],
+            correctAnswer: 1
+          }
+        ])
+      },
     ]
   },
   {
@@ -69,23 +73,25 @@ const curriculum: Module[] = [
       { id: "2.1", title: "Overview of GANs", type: "video", content: "https://www.youtube.com/watch?v=8L11aMN5KY8&ab_channel=Serrano.Academy" },
       { id: "2.2", title: "Comparing Architectures", type: "text", content: "When comparing Transformers and GANs, it's important to consider their fundamental differences..." },
       { id: "2.3", title: "Use Cases and Applications", type: "text", content: "Transformers and GANs have distinct use cases in the field of AI..." },
-      { id: "2.4", title: "Transformers vs GANs Quiz", type: "quiz", content: JSON.stringify([
-        {
-          question: "Which architecture is primarily used for generative tasks?",
-          options: ["Transformers", "GANs", "Both", "Neither"],
-          correctAnswer: 1
-        },
-        {
-          question: "What is a key difference between Transformers and GANs?",
-          options: ["Transformers use attention, GANs use convolution", "Transformers are unsupervised, GANs are supervised", "Transformers are for text, GANs are for images", "Transformers have no generator, GANs have a generator-discriminator pair"],
-          correctAnswer: 3
-        },
-        {
-          question: "In which task would you typically NOT use a GAN?",
-          options: ["Image generation", "Text summarization", "Data augmentation", "Style transfer"],
-          correctAnswer: 1
-        }
-      ]) },
+      {
+        id: "2.4", title: "Transformers vs GANs Quiz", type: "quiz", content: JSON.stringify([
+          {
+            question: "Which architecture is primarily used for generative tasks?",
+            options: ["Transformers", "GANs", "Both", "Neither"],
+            correctAnswer: 1
+          },
+          {
+            question: "What is a key difference between Transformers and GANs?",
+            options: ["Transformers use attention, GANs use convolution", "Transformers are unsupervised, GANs are supervised", "Transformers are for text, GANs are for images", "Transformers have no generator, GANs have a generator-discriminator pair"],
+            correctAnswer: 3
+          },
+          {
+            question: "In which task would you typically NOT use a GAN?",
+            options: ["Image generation", "Text summarization", "Data augmentation", "Style transfer"],
+            correctAnswer: 1
+          }
+        ])
+      },
     ]
   },
 ];
@@ -192,19 +198,129 @@ export default function LecturePage() {
     setCompletedChapters(prev => new Set(prev).add(chapterId));
   }, []);
 
-  const startVideoStream = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      setIsStreaming(true);
-      startSendingFrames();
-    } catch (error) {
-      console.error('Error accessing camera:', error);
+
+  const socketRef = useRef<WebSocket | null>(null);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [socketStatus, setSocketStatus] = useState("Connecting...");
+  const serverReadyRef = useRef(true);
+  const activeTabRef = useRef<string>('face');
+  const [emotionMap, setEmotionMap] = useState<EmotionMap | null>(null);
+  const [warning, setWarning] = useState<string>("");
+  const isStreamingRef = useRef<Boolean | null>(false);
+
+
+  useEffect(() => {
+    console.log("Mounting component");
+    console.log("Connecting to server");
+    connect();
+
+    return () => {
+      console.log("Tearing down component");
+      disconnect();
+    };
+  }, [])
+
+
+  const connect = async () => {
+    const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
+
+    serverReadyRef.current = true;
+    console.log(`Connecting to websocket... (using ${socketUrl})`);
+
+    setSocketStatus('Connecting...')
+
+    socketRef.current = new WebSocket(socketUrl);
+    socketRef.current.onopen = socketOnOpen;
+    socketRef.current.onmessage = socketOnMessage;
+    socketRef.current.onclose = socketOnClose;
+    socketRef.current.onerror = socketOnError;
+  }
+
+  const socketOnOpen = async () => {
+    console.log("Connected to websocket");
+    setSocketStatus("Connected");
+    setIsSocketConnected(true);
+  }
+
+  const socketOnMessage = async (event: MessageEvent) => {
+    console.log("event", event)
+    const data = JSON.parse(event.data as string);
+    if (data[activeTabRef.current] && data[activeTabRef.current].predictions && data[activeTabRef.current].predictions.length > 0) {
+      const emotions: Emotion[] = data[activeTabRef.current].predictions[0].emotions;
+      console.log(data)
+      const map: EmotionMap = {};
+      emotions.forEach((emotion: Emotion) => map[emotion.name] = emotion.score);
+      setEmotionMap(map);
     }
-  };
+    else {
+      const warning = data[activeTabRef.current]?.warning || "";
+      console.log("warning:", warning)
+      setWarning(warning)
+      setEmotionMap(null)
+    }
+
+  }
+
+  const socketOnClose = async (event: CloseEvent) => {
+    setSocketStatus('Disconnected');
+    disconnect();
+    console.log("Socket closed");
+    setIsSocketConnected(false)
+  }
+
+  const socketOnError = async (event: Event) => {
+    console.error("Socket failed to connect: ", event);
+    // if(numReconnects.current < maxReconnects) {
+    //     setSocketStatus('Reconnecting');
+    //     numReconnects.current++;
+    //     connect();
+    // }
+  }
+
+  function disconnect() {
+    console.log("Stopping everything...");
+    // mountRef.current = true;
+    const socket = socketRef.current;
+
+    if (socket) {
+      console.log("Closing socket");
+      socket.close();
+      if (socket.readyState === WebSocket.CLOSING) {
+        setSocketStatus('Closing...');
+        socketRef.current = null;
+      }
+    } else console.warn("Could not close socket, not initialized yet");
+
+    stopVideoStream();
+  }
+
+  const startSendingFrames = () => {
+    let video = videoRef.current;
+    const sendVideoFrames = () => {
+      if (video && canvasRef.current && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        const context = canvasRef.current.getContext('2d');
+        if (context && video) {
+          canvasRef.current.width = video.videoWidth;
+          canvasRef.current.height = video.videoHeight;
+          context.drawImage(video, 0, 0, canvasRef.current.width, canvasRef.current.height);
+          const imageData = canvasRef.current.toDataURL('image/jpeg', 0.8);
+          const base64Data = imageData.split(',')[1];
+
+          // setCapturedImage(imageData);
+
+          // Send the image data via WebSocket
+          socketRef.current.send(JSON.stringify({
+            data: base64Data,
+            models: {
+              face: {}
+            }
+          }));
+
+        }
+      }
+    }
+    sendVideoFramesIntervalRef.current = setInterval(sendVideoFrames, 1000);
+  }
 
   const stopVideoStream = () => {
     if (streamRef.current) {
@@ -219,19 +335,30 @@ export default function LecturePage() {
     }
   };
 
-  const startSendingFrames = () => {
-    sendVideoFramesIntervalRef.current = setInterval(() => {
-      if (videoRef.current && canvasRef.current) {
-        const context = canvasRef.current.getContext('2d');
-        if (context) {
-          canvasRef.current.width = videoRef.current.videoWidth;
-          canvasRef.current.height = videoRef.current.videoHeight;
-          context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-          // Here you would send the frame data to your emotion analysis service
-        }
-      }
-    }, 1000);
-  };
+  const startVideoStream = async () => {
+    try {
+      console.log('Attempting to access camera...');
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      console.log('Camera access successful, setting up video stream...');
+      streamRef.current = stream;
+      setMediaStream(stream)
+      setIsStreaming(true);
+      console.log('isStreaming set to true');
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+    }
+  }
+
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.srcObject = mediaStream;
+      videoRef.current.play();
+      console.log('Video element source set successfully');
+      startSendingFrames();
+    }
+  }, [mediaStream, videoRef])
+
 
   const getYouTubeEmbedUrl = (url: string) => {
     const videoId = url.split('v=')[1];
@@ -243,64 +370,64 @@ export default function LecturePage() {
   };
 
 
-const renderChapterContent = () => {
-  if (!currentChapter) return null;
+  const renderChapterContent = () => {
+    if (!currentChapter) return null;
 
-  switch (currentChapter.type) {
-    case 'video':
-      if (currentChapter.content.includes('youtube.com')) {
-        const embedUrl = getYouTubeEmbedUrl(currentChapter.content);
+    switch (currentChapter.type) {
+      case 'video':
+        if (currentChapter.content.includes('youtube.com')) {
+          const embedUrl = getYouTubeEmbedUrl(currentChapter.content);
+          return (
+            <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+              <iframe
+                src={embedUrl}
+                title={currentChapter.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          );
+        } else {
+          return (
+            <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+              <video src={currentChapter.content} controls className="w-full h-full" />
+            </div>
+          );
+        }
+
+      case 'text':
         return (
-          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-            <iframe
-              src={embedUrl}
-              title={currentChapter.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
+          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+            <Teleprompter content={currentChapter.content} />
+          </div>
+        );
+
+      case 'quiz':
+        const quizData = JSON.parse(currentChapter.content);
+        return (
+          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+            <Quiz
+              questions={quizData}
+              onComplete={(score) => {
+                console.log(`Quiz completed with score: ${score}`);
+                handleChapterComplete(currentChapter.id);
+                // Update course completion state
+                setCourseCompletion(prev => ({
+                  ...prev,
+                  quizzesTaken: Math.min(prev.quizzesTaken + 1, 5),
+                  overallProgress: Math.min(prev.overallProgress + 5, 100)
+                }));
+              }}
             />
           </div>
         );
-      } else {
-        return (
-          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-            <video src={currentChapter.content} controls className="w-full h-full" />
-          </div>
-        );
-      }
 
-    case 'text':
-      return (
-        <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
-          <Teleprompter content={currentChapter.content} />
-        </div>
-      );
-
-    case 'quiz':
-      const quizData = JSON.parse(currentChapter.content);
-      return (
-        <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
-          <Quiz
-            questions={quizData}
-            onComplete={(score) => {
-              console.log(`Quiz completed with score: ${score}`);
-              handleChapterComplete(currentChapter.id);
-              // Update course completion state
-              setCourseCompletion(prev => ({
-                ...prev,
-                quizzesTaken: Math.min(prev.quizzesTaken + 1, 5),
-                overallProgress: Math.min(prev.overallProgress + 5, 100)
-              }));
-            }}
-          />
-        </div>
-      );
-
-    default:
-      return null;
-  }
-};
+      default:
+        return null;
+    }
+  };
 
 
 
@@ -335,6 +462,15 @@ const renderChapterContent = () => {
       </div>
     )
   ), [mobileMenuOpen, navigationItems, handleNavigation]);
+
+  const sortedEmotions = useMemo(() => {
+    if (!emotionMap) return [];
+    return Object.entries(emotionMap)
+      .sort(([, a], [, b]) => b - a)
+      .map(([emotion, score]) => ({ emotion, score }));
+  }, [emotionMap]);
+
+
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -437,8 +573,9 @@ const renderChapterContent = () => {
           </div>
         </main>
         {/* Placeholder for EmotionSpiderChart and ExpressionGraph */}
-        {/* <EmotionSpiderChart sortedEmotions={[]} /> */}
-        {/* <ExpressionGraph sortedEmotion={[]} /> */}
+        <EmotionSpiderChart sortedEmotions={sortedEmotions} />
+        <ExpressionGraph sortedEmotion={sortedEmotions} />
+        <Bored sortedEmotion={sortedEmotions} />
       </div>
     </ErrorBoundary>
   );

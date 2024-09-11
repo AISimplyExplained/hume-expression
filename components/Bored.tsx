@@ -19,6 +19,9 @@ export default function Bored({ sortedEmotion }: Props) {
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
+        if(sortedEmotion.length === 0) {
+          return false;
+        }
         for (let i = 0; i < sortedEmotion.length; i++) {
           if (sortedEmotion[i].score < 0.4) {
             return false;
@@ -46,7 +49,7 @@ export default function Bored({ sortedEmotion }: Props) {
   }, [boredTime]);
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Warning</AlertDialogTitle>
@@ -55,7 +58,10 @@ export default function Bored({ sortedEmotion }: Props) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button onClick={() => setIsOpen(false)}>Okay</Button>
+          <Button onClick={() => {
+            setBoredTime(0)
+            setIsOpen(false)
+          }}>Okay</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
