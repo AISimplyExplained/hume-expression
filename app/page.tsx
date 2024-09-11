@@ -497,6 +497,7 @@ export default function LecturePage() {
 
   const sortedEmotions = useMemo(() => {
     if (!emotionMap) return [];
+    if(!isStreaming) return [];
     return Object.entries(emotionMap)
       .sort(([, a], [, b]) => b - a)
       .map(([emotion, score]) => ({ emotion, score }));
@@ -605,7 +606,7 @@ export default function LecturePage() {
         </main>
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
         <ExpressionGraph sortedEmotion={sortedEmotions} />
-        <Bored sortedEmotion={sortedEmotions} />
+        {sortedEmotions.length > 0 && (<Bored sortedEmotion={sortedEmotions} />)}
       </div>
     </ErrorBoundary>
   );
