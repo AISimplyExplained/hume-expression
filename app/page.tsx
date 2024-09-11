@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ErrorBoundary } from "react-error-boundary";
-import { BookOpen, List, PlayCircle, User, Video, Menu, Search, Bell, Settings, X, Moon, Sun, Webcam, Pause, ChevronDown, ChevronRight, FileText, HelpCircle } from "lucide-react";
+import { BookOpen, List, PlayCircle, User, Video, Menu, Search, Bell, Settings, X, Moon, Sun, Webcam, Pause, ChevronDown, ChevronRight, FileText, HelpCircle, Maximize, Minimize } from "lucide-react";
 import Teleprompter from '@/components/Teleprompter';
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph from "@/components/ExpressionGraph";
-import Curriculum from '@/components/Curriculum'; // Make sure to create this component
+import Curriculum from '@/components/Curriculum';
 import Quiz from "@/components/Quiz";
 import { Emotion, EmotionMap } from '@/lib/data/emotion';
 import Bored from '@/components/Bored';
+import { lessonContent } from './lessonContent';
 
-// Types and interfaces
 export type ChapterType = 'video' | 'text' | 'quiz';
 
 export interface Chapter {
@@ -36,67 +36,6 @@ interface FallbackProps {
   resetErrorBoundary: () => void;
 }
 
-
-const curriculum: Module[] = [
-  {
-    id: "module1",
-    title: "Applied Transformer Architecture",
-    chapters: [
-      { id: "1.1", title: "Introduction to Transformers", type: "video", content: "https://www.youtube.com/watch?v=wjZofJX0v4M&ab_channel=3Blue1Brown" },
-      { id: "1.2", title: "Self-Attention Mechanism", type: "text", content: "The self-attention mechanism is a key component of transformer architectures..." },
-      { id: "1.3", title: "Multi-Head Attention", type: "video", content: "https://www.youtube.com/watch?v=lmepFoddjgQ&ab_channel=learningcurve" },
-      {
-        id: "1.4", title: "Transformer Architecture Quiz", type: "quiz", content: JSON.stringify([
-          {
-            question: "What is the key component of transformer architecture?",
-            options: ["CNN", "RNN", "Self-Attention", "LSTM"],
-            correctAnswer: 2
-          },
-          {
-            question: "Which of the following is NOT a common application of transformers?",
-            options: ["Natural Language Processing", "Image Classification", "Speech Recognition", "Time Series Forecasting"],
-            correctAnswer: 1
-          },
-          {
-            question: "What is the primary advantage of multi-head attention over single-head attention?",
-            options: ["Faster computation", "Ability to focus on different parts of the input", "Reduced model size", "Increased interpretability"],
-            correctAnswer: 1
-          }
-        ])
-      },
-    ]
-  },
-  {
-    id: "module2",
-    title: "Transformers vs GANs",
-    chapters: [
-      { id: "2.1", title: "Overview of GANs", type: "video", content: "https://www.youtube.com/watch?v=8L11aMN5KY8&ab_channel=Serrano.Academy" },
-      { id: "2.2", title: "Comparing Architectures", type: "text", content: "When comparing Transformers and GANs, it's important to consider their fundamental differences..." },
-      { id: "2.3", title: "Use Cases and Applications", type: "text", content: "Transformers and GANs have distinct use cases in the field of AI..." },
-      {
-        id: "2.4", title: "Transformers vs GANs Quiz", type: "quiz", content: JSON.stringify([
-          {
-            question: "Which architecture is primarily used for generative tasks?",
-            options: ["Transformers", "GANs", "Both", "Neither"],
-            correctAnswer: 1
-          },
-          {
-            question: "What is a key difference between Transformers and GANs?",
-            options: ["Transformers use attention, GANs use convolution", "Transformers are unsupervised, GANs are supervised", "Transformers are for text, GANs are for images", "Transformers have no generator, GANs have a generator-discriminator pair"],
-            correctAnswer: 3
-          },
-          {
-            question: "In which task would you typically NOT use a GAN?",
-            options: ["Image generation", "Text summarization", "Data augmentation", "Style transfer"],
-            correctAnswer: 1
-          }
-        ])
-      },
-    ]
-  },
-];
-
-// Helper functions
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <div role="alert" className="p-4 bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100 rounded-lg">
@@ -122,7 +61,6 @@ function DarkModeToggle() {
   );
 }
 
-// Main component
 export default function LecturePage() {
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(new Set());
@@ -135,16 +73,86 @@ export default function LecturePage() {
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const sendVideoFramesIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [currentLesson, setCurrentLesson] = useState<string>("Applied Transformer Architecture");
 
   const navigationItems = useMemo(() => [
     { name: "About", href: "/lecture" },
-
   ], []);
+
+  const curriculum: Module[] = [
+    {
+      id: "module1",
+      title: "Applied Transformer Architecture",
+      chapters: [
+        { id: "1.1", title: "Introduction to Transformers", type: "video", content: "https://www.youtube.com/watch?v=wjZofJX0v4M&ab_channel=3Blue1Brown" },
+        { id: "1.2", title: "Self-Attention Mechanism", type: "text", content: "The self-attention mechanism is a key component of transformer architectures..." },
+        { id: "1.3", title: "Multi-Head Attention", type: "video", content: "https://www.youtube.com/watch?v=lmepFoddjgQ&ab_channel=learningcurve" },
+        {
+          id: "1.4", title: "Transformer Architecture Quiz", type: "quiz", content: JSON.stringify([
+            {
+              question: "What is the key component of transformer architecture?",
+              options: ["CNN", "RNN", "Self-Attention", "LSTM"],
+              correctAnswer: 2
+            },
+            {
+              question: "Which of the following is NOT a common application of transformers?",
+              options: ["Natural Language Processing", "Image Classification", "Speech Recognition", "Time Series Forecasting"],
+              correctAnswer: 1
+            },
+            {
+              question: "What is the primary advantage of multi-head attention over single-head attention?",
+              options: ["Faster computation", "Ability to focus on different parts of the input", "Reduced model size", "Increased interpretability"],
+              correctAnswer: 1
+            }
+          ])
+        },
+      ]
+    },
+    {
+      id: "module2",
+      title: "Transformers vs GANs",
+      chapters: [
+        { id: "2.1", title: "Overview of GANs", type: "video", content: "https://www.youtube.com/watch?v=8L11aMN5KY8&ab_channel=Serrano.Academy" },
+        { id: "2.2", title: "Comparing Architectures", type: "text", content: "When comparing Transformers and GANs, it's important to consider their fundamental differences..." },
+        { id: "2.3", title: "Use Cases and Applications", type: "text", content: "Transformers and GANs have distinct use cases in the field of AI..." },
+        {
+          id: "2.4", title: "Transformers vs GANs Quiz", type: "quiz", content: JSON.stringify([
+            {
+              question: "Which architecture is primarily used for generative tasks?",
+              options: ["Transformers", "GANs", "Both", "Neither"],
+              correctAnswer: 1
+            },
+            {
+              question: "What is a key difference between Transformers and GANs?",
+              options: ["Transformers use attention, GANs use convolution", "Transformers are unsupervised, GANs are supervised", "Transformers are for text, GANs are for images", "Transformers have no generator, GANs have a generator-discriminator pair"],
+              correctAnswer: 3
+            },
+            {
+              question: "In which task would you typically NOT use a GAN?",
+              options: ["Image generation", "Text summarization", "Data augmentation", "Style transfer"],
+              correctAnswer: 1
+            }
+          ])
+        },
+      ]
+    },
+  ];
+
+  useEffect(() => {
+    setCurrentChapter({
+      id: "initial",
+      title: currentLesson,
+      type: "text",
+      content: lessonContent[currentLesson as keyof typeof lessonContent]
+    });
+  }, [currentLesson]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -176,6 +184,17 @@ export default function LecturePage() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen((prev) => !prev);
   }, []);
@@ -192,12 +211,11 @@ export default function LecturePage() {
   const handleChapterSelect = useCallback((moduleIndex: number, chapterIndex: number) => {
     const selectedChapter = curriculum[moduleIndex].chapters[chapterIndex];
     setCurrentChapter(selectedChapter);
-  }, []);
+  }, [curriculum]);
 
   const handleChapterComplete = useCallback((chapterId: string) => {
     setCompletedChapters(prev => new Set(prev).add(chapterId));
   }, []);
-
 
   const socketRef = useRef<WebSocket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -207,7 +225,6 @@ export default function LecturePage() {
   const [emotionMap, setEmotionMap] = useState<EmotionMap | null>(null);
   const [warning, setWarning] = useState<string>("");
   const isStreamingRef = useRef<Boolean | null>(false);
-
 
   useEffect(() => {
     console.log("Mounting component");
@@ -219,7 +236,6 @@ export default function LecturePage() {
       disconnect();
     };
   }, [])
-
 
   const connect = async () => {
     const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
@@ -258,7 +274,6 @@ export default function LecturePage() {
       setWarning(warning)
       setEmotionMap(null)
     }
-
   }
 
   const socketOnClose = async (event: CloseEvent) => {
@@ -270,16 +285,10 @@ export default function LecturePage() {
 
   const socketOnError = async (event: Event) => {
     console.error("Socket failed to connect: ", event);
-    // if(numReconnects.current < maxReconnects) {
-    //     setSocketStatus('Reconnecting');
-    //     numReconnects.current++;
-    //     connect();
-    // }
   }
 
   function disconnect() {
     console.log("Stopping everything...");
-    // mountRef.current = true;
     const socket = socketRef.current;
 
     if (socket) {
@@ -306,16 +315,12 @@ export default function LecturePage() {
           const imageData = canvasRef.current.toDataURL('image/jpeg', 0.8);
           const base64Data = imageData.split(',')[1];
 
-          // setCapturedImage(imageData);
-
-          // Send the image data via WebSocket
           socketRef.current.send(JSON.stringify({
             data: base64Data,
             models: {
               face: {}
             }
           }));
-
         }
       }
     }
@@ -359,7 +364,6 @@ export default function LecturePage() {
     }
   }, [mediaStream, videoRef])
 
-
   const getYouTubeEmbedUrl = (url: string) => {
     const videoId = url.split('v=')[1];
     const ampersandPosition = videoId.indexOf('&');
@@ -369,16 +373,40 @@ export default function LecturePage() {
     return `https://www.youtube.com/embed/${videoId}`;
   };
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      if (contentRef.current?.requestFullscreen) {
+        contentRef.current.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   const renderChapterContent = () => {
     if (!currentChapter) return null;
+
+    const fullscreenButton = (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleFullscreen}
+        className="absolute top-2 right-2 z-20"
+        aria-label="Toggle fullscreen"
+      >
+        {isFullscreen ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
+      </Button>
+    );
 
     switch (currentChapter.type) {
       case 'video':
         if (currentChapter.content.includes('youtube.com')) {
           const embedUrl = getYouTubeEmbedUrl(currentChapter.content);
           return (
-            <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+            <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+              {fullscreenButton}
               <iframe
                 src={embedUrl}
                 title={currentChapter.title}
@@ -391,7 +419,8 @@ export default function LecturePage() {
           );
         } else {
           return (
-            <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+            <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+              {fullscreenButton}
               <video src={currentChapter.content} controls className="w-full h-full" />
             </div>
           );
@@ -399,7 +428,8 @@ export default function LecturePage() {
 
       case 'text':
         return (
-          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+          <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+            {fullscreenButton}
             <Teleprompter content={currentChapter.content} />
           </div>
         );
@@ -407,13 +437,13 @@ export default function LecturePage() {
       case 'quiz':
         const quizData = JSON.parse(currentChapter.content);
         return (
-          <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+          <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+            {fullscreenButton}
             <Quiz
               questions={quizData}
               onComplete={(score) => {
                 console.log(`Quiz completed with score: ${score}`);
                 handleChapterComplete(currentChapter.id);
-                // Update course completion state
                 setCourseCompletion(prev => ({
                   ...prev,
                   quizzesTaken: Math.min(prev.quizzesTaken + 1, 5),
@@ -428,8 +458,6 @@ export default function LecturePage() {
         return null;
     }
   };
-
-
 
   const renderNavigationItems = useMemo(() => (
     navigationItems.map((item) => (
@@ -470,8 +498,6 @@ export default function LecturePage() {
       .map(([emotion, score]) => ({ emotion, score }));
   }, [emotionMap]);
 
-
-
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
@@ -497,7 +523,7 @@ export default function LecturePage() {
         <main className="flex-1 overflow-auto p-4">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div ref={contentRef} className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <h2 className="text-xl font-bold mb-4 dark:text-white">
                   {currentChapter ? currentChapter.title : "Welcome to Applied AI"}
                 </h2>
@@ -572,7 +598,6 @@ export default function LecturePage() {
             </div>
           </div>
         </main>
-        {/* Placeholder for EmotionSpiderChart and ExpressionGraph */}
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
         <ExpressionGraph sortedEmotion={sortedEmotions} />
         <Bored sortedEmotion={sortedEmotions} />
