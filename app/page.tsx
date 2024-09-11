@@ -381,32 +381,43 @@ export default function LecturePage() {
     return `https://www.youtube.com/embed/${videoId}`;
   };
 
+  // const toggleFullscreen = () => {
+  //   if (!document.fullscreenElement) {
+  //     if (contentRef.current?.requestFullscreen) {
+  //       contentRef.current.requestFullscreen();
+  //     }
+  //   } else {
+  //     if (document.exitFullscreen) {
+  //       document.exitFullscreen();
+  //     }
+  //   }
+  // };
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      if (contentRef.current?.requestFullscreen) {
-        contentRef.current.requestFullscreen();
-      }
+  if (contentRef.current) {
+    if (isFullscreen) {
+      contentRef.current.classList.remove('fullscreen-mode');
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      contentRef.current.classList.add('fullscreen-mode');
     }
-  };
+    setIsFullscreen(!isFullscreen);
+  }
+};
 
   const renderChapterContent = () => {
     if (!currentChapter) return null;
 
+
     const fullscreenButton = (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggleFullscreen}
-        className="absolute top-2 right-2 z-20"
-        aria-label="Toggle fullscreen"
-      >
-        {isFullscreen ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
-      </Button>
-    );
+  <Button
+    variant="ghost"
+    size="icon"
+    onClick={toggleFullscreen}
+    className="absolute top-2 right-2 z-20"
+    aria-label="Toggle fullscreen"
+  >
+    {isFullscreen ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
+  </Button>
+);
 
     switch (currentChapter.type) {
       case 'video':

@@ -1,7 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: white;
+  overflow-y: auto;
+  padding: 1rem;
+}
 
+.dark .fullscreen-mode {
+  background: #1f2937; /* Adjust this to match your dark mode background color */
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
