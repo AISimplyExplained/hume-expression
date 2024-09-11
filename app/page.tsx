@@ -530,7 +530,7 @@ export default function LecturePage() {
                 {renderChapterContent()}
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h2 className="text-xl font-bold mb-4 dark:text-white">Course Progress</h2>
+                <h2 className="text-xl font-bold mb-4 dark:text-white">Engagement</h2>
                 <div className="relative w-full aspect-video mb-4">
                   {isStreaming ? (
                     <video
@@ -565,26 +565,29 @@ export default function LecturePage() {
                   )}
                 </div>
                 <div className="space-y-4">
+                  <h2 className="text-xl font-bold mb-4 dark:text-white">Course Progress</h2>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Videos Watched</span>
                     <span className="text-sm font-medium dark:text-white">{courseCompletion.videosWatched}/10</span>
                   </div>
-                  <Progress value={(courseCompletion.videosWatched / 10) * 100} className="w-full" />
+                  <Progress value={(courseCompletion.videosWatched / 10) * 100} className="w-full"/>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Quizzes Taken</span>
                     <span className="text-sm font-medium dark:text-white">{courseCompletion.quizzesTaken}/5</span>
                   </div>
-                  <Progress value={(courseCompletion.quizzesTaken / 5) * 100} className="w-full" />
+                  <Progress value={(courseCompletion.quizzesTaken / 5) * 100} className="w-full"/>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Assignments Completed</span>
-                    <span className="text-sm font-medium dark:text-white">{courseCompletion.assignmentsCompleted}/3</span>
+                    <span
+                        className="text-sm font-medium dark:text-white">{courseCompletion.assignmentsCompleted}/3</span>
                   </div>
-                  <Progress value={(courseCompletion.assignmentsCompleted / 3) * 100} className="w-full" />
+                  <Progress value={(courseCompletion.assignmentsCompleted / 3) * 100} className="w-full"/>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Overall Progress</span>
-                    <span className="text-sm font-medium dark:text-white">{courseCompletion.overallProgress.toFixed(1)}%</span>
+                    <span
+                        className="text-sm font-medium dark:text-white">{courseCompletion.overallProgress.toFixed(1)}%</span>
                   </div>
-                  <Progress value={courseCompletion.overallProgress} className="w-full" />
+                  <Progress value={courseCompletion.overallProgress} className="w-full"/>
                 </div>
               </div>
             </div>
