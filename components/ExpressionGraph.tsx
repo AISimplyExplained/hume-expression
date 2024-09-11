@@ -31,9 +31,6 @@ const colors = [
 ];
 
 // @ts-ignore
-
-
-
 const CustomizedDot = (props: any) => {
   const { cx, cy, payload } = props;
   let size = 0

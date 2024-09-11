@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { Button } from './ui/button';
+import { supabase } from '@/lib/utilities/supabase';
+import { useBoredTime } from '@/lib/hooks/useBoredTime';
 
 interface Props {
   sortedEmotion: {
@@ -11,7 +13,8 @@ interface Props {
 
 export default function Bored({ sortedEmotion }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [boredTime, setBoredTime] = useState(0)
+  const [boredTime, setBoredTime] = useState(0);
+  const { boredTime: boredServerTime } = useBoredTime()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,7 +40,7 @@ export default function Bored({ sortedEmotion }: Props) {
   }, [sortedEmotion])
 
   useEffect(() => {
-    if (boredTime >= 5) {
+    if (boredTime >= boredServerTime) {
       setIsOpen(true);
     }
   }, [boredTime]);
