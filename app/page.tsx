@@ -430,7 +430,7 @@ export default function LecturePage() {
         return (
           <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
             {fullscreenButton}
-            <Teleprompter content={currentChapter.content} />
+            <Teleprompter content={lessonContent[currentLesson as keyof typeof lessonContent]} />
           </div>
         );
 
@@ -578,14 +578,12 @@ export default function LecturePage() {
                   <Progress value={(courseCompletion.quizzesTaken / 5) * 100} className="w-full"/>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Assignments Completed</span>
-                    <span
-                        className="text-sm font-medium dark:text-white">{courseCompletion.assignmentsCompleted}/3</span>
+                    <span className="text-sm font-medium dark:text-white">{courseCompletion.assignmentsCompleted}/3</span>
                   </div>
                   <Progress value={(courseCompletion.assignmentsCompleted / 3) * 100} className="w-full"/>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Overall Progress</span>
-                    <span
-                        className="text-sm font-medium dark:text-white">{courseCompletion.overallProgress.toFixed(1)}%</span>
+                    <span className="text-sm font-medium dark:text-white">{courseCompletion.overallProgress.toFixed(1)}%</span>
                   </div>
                   <Progress value={courseCompletion.overallProgress} className="w-full"/>
                 </div>
