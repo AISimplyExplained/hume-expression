@@ -1,8 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react'
+import { PlayIcon, PauseIcon, RotateCcwIcon, MoreVertical } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface TeleprompterProps {
   content: string;
@@ -12,6 +18,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
   const [currentPosition, setCurrentPosition] = useState(0)
+  const [progress, setProgress] = useState(0)
   const contentRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -32,6 +39,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
         const yPosition = Math.min((elapsed / duration) * totalScrollDistance, totalScrollDistance)
         contentRef.current.style.transform = `translateY(-${yPosition}px)`
         setCurrentPosition(yPosition)
+        setProgress((yPosition / totalScrollDistance) * 100)
 
         if (yPosition < totalScrollDistance) {
           animationFrame = requestAnimationFrame(animate)
@@ -54,16 +62,29 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
 
   const togglePlay = () => setIsPlaying(!isPlaying)
 
-  const handleSpeedChange = (newSpeed: number[]) => setSpeed(newSpeed[0])
+  const handleSpeedChange = (newSpeed: number) => setSpeed(newSpeed)
 
   const resetTeleprompter = () => {
     setIsPlaying(false)
     setCurrentPosition(0)
+    setProgress(0)
     if (contentRef.current) {
       contentRef.current.style.transition = 'none'
       contentRef.current.style.transform = 'translateY(0)'
       contentRef.current.offsetHeight
       contentRef.current.style.transition = ''
+    }
+  }
+
+  const handleProgressChange = (newProgress: number[]) => {
+    if (contentRef.current && containerRef.current) {
+      const contentHeight = contentRef.current.scrollHeight
+      const containerHeight = containerRef.current.clientHeight
+      const totalScrollDistance = contentHeight - containerHeight
+      const newPosition = (newProgress[0] / 100) * totalScrollDistance
+      setCurrentPosition(newPosition)
+      contentRef.current.style.transform = `translateY(-${newPosition}px)`
+      setProgress(newProgress[0])
     }
   }
 
@@ -109,25 +130,36 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
         </div>
       </div>
       <div className="bg-background p-2 border-t">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
-          <Button onClick={togglePlay} variant="outline" size="icon" className="w-10 h-10">
-            {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5" />}
-          </Button>
-          <div className="flex-1">
-            <Slider
-              min={0.5}
-              max={2}
-              step={0.1}
-              value={[speed]}
-              onValueChange={handleSpeedChange}
-            />
+        <div className="max-w-4xl mx-auto space-y-2">
+          <Slider
+            min={0}
+            max={100}
+            step={0.1}
+            value={[progress]}
+            onValueChange={handleProgressChange}
+            className="w-full"
+          />
+          <div className="flex items-center justify-between gap-2">
+            <Button onClick={togglePlay} variant="outline" size="icon" className="w-10 h-10">
+              {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5" />}
+            </Button>
+            <Button onClick={resetTeleprompter} variant="outline" size="icon" className="w-10 h-10">
+              <RotateCcwIcon className="h-5 w-5" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="w-10 h-10">
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(0.5)}>0.5x</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(1)}>1x</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(1.5)}>1.5x</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(2)}>2x</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <Button onClick={resetTeleprompter} variant="outline" size="icon" className="w-10 h-10">
-            <RotateCcwIcon className="h-5 w-5" />
-          </Button>
-        </div>
-        <div className="text-center text-sm text-muted-foreground mt-1">
-          Speed: {speed.toFixed(1)}x
         </div>
       </div>
     </div>
