@@ -14,9 +14,10 @@ interface Question {
 interface QuizProps {
   topic: string;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>
 }
 
-const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic }) => {
+const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -79,7 +80,10 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic }) => {
       {quizCompleted && <Button
         variant={"ghost"}
         className="absolute right-2 top-2"
-        onClick={() => setIsOpen(false)}
+        onClick={() => {
+          setBoredTime(0)
+          setIsOpen(false)
+        }}
       >
         <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
       </Button>}
@@ -146,6 +150,15 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic }) => {
             {currentQuestion < questions.length - 1 ? "Next Question" : "Finish Quiz"} <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         )}
+        {quizCompleted && <Button
+          className='ml-auto'
+          onClick={() => {
+            setBoredTime(0)
+            setIsOpen(false)
+          }}
+        >
+          close
+        </Button>}
       </CardFooter>
     </Card>
   );

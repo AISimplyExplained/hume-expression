@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 interface PollProps {
   topic: string;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>
 }
 
 type Question = {
@@ -18,7 +19,7 @@ type Question = {
   options: string[];
 };
 
-const Poll: React.FC<PollProps> = ({ setIsOpen, topic }) => {
+const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
@@ -124,6 +125,7 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic }) => {
             className="ml-auto"
             onClick={() => {
               setIsOpen(false);
+              setBoredTime(0)
             }}
           >
             Close

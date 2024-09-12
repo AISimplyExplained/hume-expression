@@ -5,9 +5,10 @@ import { X } from 'lucide-react'
 interface Props {
   topic: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>
 }
 
-export default function UseCase({ setIsOpen, topic }: Props) {
+export default function UseCase({ setIsOpen, topic , setBoredTime}: Props) {
   const [uses, setUses] = useState<string[]>([])
 
   const getRes = async () => {
@@ -44,7 +45,10 @@ export default function UseCase({ setIsOpen, topic }: Props) {
       <Button
         variant={"ghost"}
         className="absolute right-2 top-2"
-        onClick={() => setIsOpen(false)}
+        onClick={() => {
+          setIsOpen(false)
+          setBoredTime(0)
+        }}
       >
         <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
       </Button>
