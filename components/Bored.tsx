@@ -117,7 +117,7 @@ export default function Bored({ sortedEmotion }: Props) {
                 Need a Hand with Applied Transformer Architectures?
               </AlertDialogTitle>
               <AlertDialogDescription>
-                We've noticed you might be feeling a bit stuck or disengaged
+                We&#39;ve noticed you might be feeling a bit stuck or disengaged
                 with the material. Can we help you explore this concept in a
                 different way?
               </AlertDialogDescription>
@@ -129,7 +129,7 @@ export default function Bored({ sortedEmotion }: Props) {
                   setDialogState("no");
                 }}
               >
-                NO, I'm good to continue
+                NO, I&#39;m good to continue
               </Button>
               <Button
                 onClick={() => {
@@ -144,7 +144,7 @@ export default function Bored({ sortedEmotion }: Props) {
         {dialogState === "no" && (
           <>
             <AlertDialogDescription>
-              Great! We'll keep going with the lesson. Feel free to pause or ask
+              Great! We&#39;ll keep going with the lesson. Feel free to pause or ask
               for help anytime.
             </AlertDialogDescription>
             <Button
