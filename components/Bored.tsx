@@ -65,13 +65,16 @@ const renderContent = (
 export default function Bored({ sortedEmotion }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [boredTime, setBoredTime] = useState(0);
-  const {boredTime: boredServerTime } = useBoredTime();
+  const { boredTime: boredServerTime } = useBoredTime();
   const [dialogState, setDialogState] = useState<DialogState>("initial");
   const [exploreOpt, setExploreOpt] = useState<ExplorationOptionType>("");
 
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
+        if (isOpen) {
+          return false
+        }
         if (sortedEmotion.length === 0) {
           return false;
         }
@@ -101,11 +104,11 @@ export default function Bored({ sortedEmotion }: Props) {
   }, [boredTime, isOpen, boredServerTime]);
 
   useEffect(() => {
-    if(dialogState !== "initial" && boredTime === 0) {
+    if (dialogState !== "initial" && boredTime === 0) {
       setDialogState("initial")
     }
 
-  } ,[boredTime, dialogState])
+  }, [boredTime, dialogState])
 
   const handleOptionClick = (option: ExplorationOptionType): void => {
     console.log(`Selected option: ${option}`);
