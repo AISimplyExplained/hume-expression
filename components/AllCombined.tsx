@@ -513,7 +513,7 @@ const AllCombined = () => {
             </div>
             {sortedEmotions?.length > 0 && <ExpressionGraph sortedEmotion={sortedEmotions} />}
             {sortedEmotions?.length > 0 && <EmotionSpiderChart sortedEmotions={sortedEmotions} />}
-            {sortedEmotions?.length > 0 && <Bored sortedEmotion={sortedEmotions} />}
+            {/* {sortedEmotions?.length > 0 && <Bored sortedEmotion={sortedEmotions} />} */}
         </div>
     );
 }

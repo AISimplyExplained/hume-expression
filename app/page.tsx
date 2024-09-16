@@ -16,6 +16,7 @@ import Quiz from "@/components/Quiz";
 import { Emotion, EmotionMap } from '@/lib/data/emotion';
 import Bored from '@/components/Bored';
 import { lessonContent } from './lessonContent';
+import RenderChapterContent from "@/components/RenderChapterContent"
 
 export type ChapterType = 'video' | 'text' | 'quiz';
 
@@ -85,9 +86,9 @@ export default function LecturePage() {
 
   const navigationItems = useMemo(() => [
     { name: "Product", href: "#" },
-      { name: "Personalization", href: "#" },
-      { name: "Account", href: "#" },
-      { name: "Contact Us", href: "#" },
+    { name: "Personalization", href: "#" },
+    { name: "Account", href: "#" },
+    { name: "Contact Us", href: "#" },
   ], []);
 
   const curriculum: Module[] = [
@@ -230,6 +231,8 @@ export default function LecturePage() {
   const [warning, setWarning] = useState<string>("");
   const isStreamingRef = useRef<Boolean | null>(false);
 
+  const [isOpen, setIsOpen] = useState(false)
+
   useEffect(() => {
     console.log("Mounting component");
     console.log("Connecting to server");
@@ -308,7 +311,7 @@ export default function LecturePage() {
   }
 
   const startSendingFrames = () => {
-   
+
     let video = videoRef.current;
     const sendVideoFrames = () => {
       if (video && canvasRef.current && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -347,7 +350,7 @@ export default function LecturePage() {
 
   const startVideoStream = async () => {
     try {
-      if(!isSocketConnected) {
+      if (!isSocketConnected) {
         connect();
       }
       console.log('Attempting to access camera...');
@@ -372,111 +375,20 @@ export default function LecturePage() {
     }
   }, [mediaStream, videoRef])
 
-  const getYouTubeEmbedUrl = (url: string) => {
-    const videoId = url.split('v=')[1];
-    const ampersandPosition = videoId.indexOf('&');
-    if (ampersandPosition !== -1) {
-      return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
-    }
-    return `https://www.youtube.com/embed/${videoId}`;
-  };
+  
 
-  // const toggleFullscreen = () => {
-  //   if (!document.fullscreenElement) {
-  //     if (contentRef.current?.requestFullscreen) {
-  //       contentRef.current.requestFullscreen();
-  //     }
-  //   } else {
-  //     if (document.exitFullscreen) {
-  //       document.exitFullscreen();
-  //     }
-  //   }
-  // };
   const toggleFullscreen = () => {
-  if (contentRef.current) {
-    if (isFullscreen) {
-      contentRef.current.classList.remove('fullscreen-mode');
-    } else {
-      contentRef.current.classList.add('fullscreen-mode');
-    }
-    setIsFullscreen(!isFullscreen);
-  }
-};
-
-  const renderChapterContent = () => {
-    if (!currentChapter) return null;
-
-
-    const fullscreenButton = (
-  <Button
-    variant="ghost"
-    size="icon"
-    onClick={toggleFullscreen}
-    className="absolute top-2 right-2 z-20"
-    aria-label="Toggle fullscreen"
-  >
-    {isFullscreen ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
-  </Button>
-);
-
-    switch (currentChapter.type) {
-      case 'video':
-        if (currentChapter.content.includes('youtube.com')) {
-          const embedUrl = getYouTubeEmbedUrl(currentChapter.content);
-          return (
-            <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-              {fullscreenButton}
-              <iframe
-                src={embedUrl}
-                title={currentChapter.title}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
-          );
-        } else {
-          return (
-            <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-              {fullscreenButton}
-              <video src={currentChapter.content} controls className="w-full h-full" />
-            </div>
-          );
-        }
-
-      case 'text':
-        return (
-          <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
-            {fullscreenButton}
-            <Teleprompter content={lessonContent[currentLesson as keyof typeof lessonContent]} />
-          </div>
-        );
-
-      case 'quiz':
-        const quizData = JSON.parse(currentChapter.content);
-        return (
-          <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
-            {fullscreenButton}
-            <Quiz
-              questions={quizData}
-              onComplete={(score) => {
-                console.log(`Quiz completed with score: ${score}`);
-                handleChapterComplete(currentChapter.id);
-                setCourseCompletion(prev => ({
-                  ...prev,
-                  quizzesTaken: Math.min(prev.quizzesTaken + 1, 5),
-                  overallProgress: Math.min(prev.overallProgress + 5, 100)
-                }));
-              }}
-            />
-          </div>
-        );
-
-      default:
-        return null;
+    if (contentRef.current) {
+      if (isFullscreen) {
+        contentRef.current.classList.remove('fullscreen-mode');
+      } else {
+        contentRef.current.classList.add('fullscreen-mode');
+      }
+      setIsFullscreen(!isFullscreen);
     }
   };
+
+ 
 
   const renderNavigationItems = useMemo(() => (
     navigationItems.map((item) => (
@@ -512,7 +424,7 @@ export default function LecturePage() {
 
   const sortedEmotions = useMemo(() => {
     if (!emotionMap) return [];
-    if(!isStreaming) return [];
+    if (!isStreaming) return [];
     return Object.entries(emotionMap)
       .sort(([, a], [, b]) => b - a)
       .map(([emotion, score]) => ({ emotion, score }));
@@ -526,11 +438,11 @@ export default function LecturePage() {
             <div className="flex justify-between h-16">
               <div className="flex items-center">
                 <Button variant="ghost" size="icon" className="mr-2 md:hidden" onClick={toggleMobileMenu}
-                        aria-label="Toggle menu">
-                  {mobileMenuOpen ? <X className="h-6 w-6"/> : <Menu className="h-6 w-6"/>}
+                  aria-label="Toggle menu">
+                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
                 <Button variant="link" onClick={() => router.push('/')}
-                        className="text-2xl font-bold dark:text-white mr-4">ADAPTIVE LEARNING</Button>
+                  className="text-2xl font-bold dark:text-white mr-4">ADAPTIVE LEARNING</Button>
                 <nav className="hidden md:flex space-x-2">
                   {renderNavigationItems}
                 </nav>
@@ -540,7 +452,7 @@ export default function LecturePage() {
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
                 </Avatar>
-                <DarkModeToggle/>
+                <DarkModeToggle />
               </div>
             </div>
           </div>
@@ -553,7 +465,18 @@ export default function LecturePage() {
                 <h2 className="text-xl font-bold mb-4 dark:text-white">
                   {currentChapter ? currentChapter.title : "Welcome to Applied AI"}
                 </h2>
-                {renderChapterContent()}
+               <RenderChapterContent
+                  currentChapter={currentChapter}
+                  currentLesson={currentLesson}
+                  isOpen={isOpen}
+                  handleChapterComplete={handleChapterComplete}
+                  isFullscreen={isFullscreen}
+                  lessonContent={lessonContent}
+                  setCourseCompletion={
+                    setCourseCompletion
+                  }
+                  toggleFullscreen={toggleFullscreen}
+               /> 
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <h2 className="text-xl font-bold mb-4 dark:text-white">Engagement</h2>
@@ -596,22 +519,22 @@ export default function LecturePage() {
                     <span className="text-sm font-medium dark:text-white">Videos Watched</span>
                     <span className="text-sm font-medium dark:text-white">{courseCompletion.videosWatched}/10</span>
                   </div>
-                  <Progress value={(courseCompletion.videosWatched / 10) * 100} className="w-full"/>
+                  <Progress value={(courseCompletion.videosWatched / 10) * 100} className="w-full" />
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Quizzes Taken</span>
                     <span className="text-sm font-medium dark:text-white">{courseCompletion.quizzesTaken}/5</span>
                   </div>
-                  <Progress value={(courseCompletion.quizzesTaken / 5) * 100} className="w-full"/>
+                  <Progress value={(courseCompletion.quizzesTaken / 5) * 100} className="w-full" />
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Assignments Completed</span>
                     <span className="text-sm font-medium dark:text-white">{courseCompletion.assignmentsCompleted}/3</span>
                   </div>
-                  <Progress value={(courseCompletion.assignmentsCompleted / 3) * 100} className="w-full"/>
+                  <Progress value={(courseCompletion.assignmentsCompleted / 3) * 100} className="w-full" />
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">Overall Progress</span>
                     <span className="text-sm font-medium dark:text-white">{courseCompletion.overallProgress.toFixed(1)}%</span>
                   </div>
-                  <Progress value={courseCompletion.overallProgress} className="w-full"/>
+                  <Progress value={courseCompletion.overallProgress} className="w-full" />
                 </div>
               </div>
             </div>
@@ -627,7 +550,7 @@ export default function LecturePage() {
         </main>
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
         <ExpressionGraph sortedEmotion={sortedEmotions} />
-        {sortedEmotions.length > 0 && (<Bored sortedEmotion={sortedEmotions} />)}
+        {sortedEmotions.length > 0 && (<Bored isOpen={isOpen} setIsOpen={setIsOpen} sortedEmotion={sortedEmotions} />)}
       </div>
     </ErrorBoundary>
   );

@@ -12,9 +12,10 @@ import {
 
 interface TeleprompterProps {
   content: string;
+  isOpen: boolean
 }
 
-const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
+const Teleprompter: React.FC<TeleprompterProps> = ({ content,isOpen }) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
   const [currentPosition, setCurrentPosition] = useState(0)
@@ -59,6 +60,12 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content }) => {
       }
     }
   }, [isPlaying, speed, currentPosition])
+
+  useEffect(() => {
+    if(isOpen) {
+      setIsPlaying(false)
+    }
+  },[isOpen])
 
   const togglePlay = () => setIsPlaying(!isPlaying)
 

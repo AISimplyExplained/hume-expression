@@ -21,6 +21,8 @@ interface Props {
     emotion: string;
     score: number;
   }[];
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type DialogState = "initial" | "no" | "yes";
@@ -62,8 +64,7 @@ const renderContent = (
   }
 };
 
-export default function Bored({ sortedEmotion }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Bored({ sortedEmotion, isOpen,setIsOpen }: Props) {
   const [boredTime, setBoredTime] = useState(0);
   const { boredTime: boredServerTime } = useBoredTime();
   const [dialogState, setDialogState] = useState<DialogState>("initial");
@@ -75,6 +76,7 @@ export default function Bored({ sortedEmotion }: Props) {
         if (isOpen) {
           return false
         }
+
         if (sortedEmotion.length === 0) {
           return false;
         }
