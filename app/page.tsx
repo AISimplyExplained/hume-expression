@@ -266,11 +266,9 @@ export default function LecturePage() {
   }
 
   const socketOnMessage = async (event: MessageEvent) => {
-    console.log("event", event)
     const data = JSON.parse(event.data as string);
     if (data[activeTabRef.current] && data[activeTabRef.current].predictions && data[activeTabRef.current].predictions.length > 0) {
       const emotions: Emotion[] = data[activeTabRef.current].predictions[0].emotions;
-      console.log(data)
       const map: EmotionMap = {};
       emotions.forEach((emotion: Emotion) => map[emotion.name] = emotion.score);
       setEmotionMap(map);

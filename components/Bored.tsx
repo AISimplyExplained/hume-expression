@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -22,7 +20,7 @@ interface Props {
     score: number;
   }[];
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type DialogState = "initial" | "no" | "yes";
@@ -46,15 +44,30 @@ const renderContent = (
   switch (selectedOption) {
     case "Show me a simple use-case":
       return (
-        <UseCase topic="Transformer Architectures" setIsOpen={setIsOpen} setBoredTime={setBoredTime} />
+        <UseCase
+          topic="Transformer Architectures"
+          setIsOpen={setIsOpen}
+          setBoredTime={setBoredTime}
+        />
       );
 
     case "Give me a quick poll":
-      return <Poll topic="Transformer Architectures" setIsOpen={setIsOpen} setBoredTime={setBoredTime} />;
-
+      return (
+        <Poll
+          topic="Transformer Architectures"
+          setIsOpen={setIsOpen}
+          setBoredTime={setBoredTime}
+        />
+      );
 
     case "Test me with a quiz":
-      return <Quiz setBoredTime={setBoredTime} topic="Transformer Architectures" setIsOpen={setIsOpen} />;
+      return (
+        <Quiz
+          setBoredTime={setBoredTime}
+          topic="Transformer Architectures"
+          setIsOpen={setIsOpen}
+        />
+      );
 
     case "":
       return null;
@@ -64,7 +77,7 @@ const renderContent = (
   }
 };
 
-export default function Bored({ sortedEmotion, isOpen,setIsOpen }: Props) {
+export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
   const [boredTime, setBoredTime] = useState(0);
   const { boredTime: boredServerTime } = useBoredTime();
   const [dialogState, setDialogState] = useState<DialogState>("initial");
@@ -74,7 +87,7 @@ export default function Bored({ sortedEmotion, isOpen,setIsOpen }: Props) {
     const interval = setInterval(() => {
       const isBored = () => {
         if (isOpen) {
-          return false
+          return false;
         }
 
         if (sortedEmotion.length === 0) {
@@ -84,37 +97,46 @@ export default function Bored({ sortedEmotion, isOpen,setIsOpen }: Props) {
           if (sortedEmotion[i].score < 0.4) {
             return false;
           }
-          if (sortedEmotion[i].emotion === "Boredom" || sortedEmotion[i].emotion === "Disappointment") {
+          if (
+            sortedEmotion[i].emotion === "Boredom" ||
+            sortedEmotion[i].emotion === "Disappointment"
+          ) {
             return true;
           }
         }
         return false;
+      };
+      const check = isBored();
+      if (check) {
+        setBoredTime((prev) => prev + 1);
       }
-      if (isBored()) {
-        setBoredTime(prev => prev + 1)
-      }
-    }, 1000)
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [sortedEmotion])
+    return () => clearInterval(interval);
+  }, [sortedEmotion]);
 
   useEffect(() => {
     if (boredTime === boredServerTime && !isOpen) {
       setIsOpen(true);
     }
-
   }, [boredTime, isOpen, boredServerTime]);
 
   useEffect(() => {
     if (dialogState !== "initial" && boredTime === 0) {
-      setDialogState("initial")
+      setDialogState("initial");
     }
-
-  }, [boredTime, dialogState])
+  }, [boredTime, dialogState]);
 
   const handleOptionClick = (option: ExplorationOptionType): void => {
     console.log(`Selected option: ${option}`);
     setExploreOpt(option);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setBoredTime(0);
+    setDialogState("initial"); // Reset dialog state when closing
+    setExploreOpt(""); // Reset explore option when closing
   };
 
   return (
@@ -154,17 +176,10 @@ export default function Bored({ sortedEmotion, isOpen,setIsOpen }: Props) {
         {dialogState === "no" && (
           <>
             <AlertDialogDescription>
-              Great! We&#39;ll keep going with the lesson. Feel free to pause or ask
-              for help anytime.
+              Great! We&#39;ll keep going with the lesson. Feel free to pause or
+              ask for help anytime.
             </AlertDialogDescription>
-            <Button
-              onClick={() => {
-                setIsOpen(false);
-                setBoredTime(0)
-              }}
-            >
-              Close
-            </Button>
+            <Button onClick={handleClose}>Close</Button>
           </>
         )}
         {dialogState === "yes" && exploreOpt === "" && (
@@ -184,7 +199,8 @@ export default function Bored({ sortedEmotion, isOpen,setIsOpen }: Props) {
             </div>
           </>
         )}
-        {dialogState === "yes" && renderContent(exploreOpt, setIsOpen, setBoredTime)}
+        {dialogState === "yes" &&
+          renderContent(exploreOpt, setIsOpen, setBoredTime)}
       </AlertDialogContent>
     </AlertDialog>
   );
