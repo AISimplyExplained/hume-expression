@@ -76,7 +76,7 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
   }
 
   return (
-    <Card className="w-full max-w-xl mx-auto">
+    <Card className="w-full mx-auto my-auto">
       <CardHeader>
         <div className={`flex justify-between items-center ${pollCompleted ? 'hidden' : ""}`}>
           <h2 className="text-2xl font-bold">Poll</h2>
@@ -93,7 +93,7 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
           />
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full">
         {!pollCompleted ? (
           <>
             <h3 className="text-xl font-semibold mb-4">
@@ -104,7 +104,7 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
                 <Button
                   key={index}
                   onClick={() => handleAnswer(index)}
-                  className="w-full justify-start text-left"
+                  className="w-full justify-start text-left text-lg "
                   variant="outline"
                 >
                   {option}

@@ -435,12 +435,26 @@ export default function LecturePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex items-center">
-                <Button variant="ghost" size="icon" className="mr-2 md:hidden" onClick={toggleMobileMenu}
-                  aria-label="Toggle menu">
-                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="mr-2 md:hidden"
+                  onClick={toggleMobileMenu}
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? (
+                    <X className="h-6 w-6" />
+                  ) : (
+                    <Menu className="h-6 w-6" />
+                  )}
                 </Button>
-                <Button variant="link" onClick={() => router.push('/')}
-                  className="text-2xl font-bold dark:text-white mr-4">ADAPTIVE LEARNING</Button>
+                <Button
+                  variant="link"
+                  onClick={() => router.push("/")}
+                  className="text-2xl font-bold dark:text-white mr-4"
+                >
+                  ADAPTIVE LEARNING
+                </Button>
                 <nav className="hidden md:flex space-x-2">
                   {renderNavigationItems}
                 </nav>
@@ -459,25 +473,30 @@ export default function LecturePage() {
         <main className="flex-1 overflow-auto p-4">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div ref={contentRef} className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div
+                ref={contentRef}
+                className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
+              >
                 <h2 className="text-xl font-bold mb-4 dark:text-white">
-                  {currentChapter ? currentChapter.title : "Welcome to Applied AI"}
+                  {currentChapter
+                    ? currentChapter.title
+                    : "Welcome to Applied AI"}
                 </h2>
-               <RenderChapterContent
+                <RenderChapterContent
                   currentChapter={currentChapter}
                   currentLesson={currentLesson}
                   isOpen={isOpen}
                   handleChapterComplete={handleChapterComplete}
                   isFullscreen={isFullscreen}
                   lessonContent={lessonContent}
-                  setCourseCompletion={
-                    setCourseCompletion
-                  }
+                  setCourseCompletion={setCourseCompletion}
                   toggleFullscreen={toggleFullscreen}
-               /> 
+                />
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h2 className="text-xl font-bold mb-4 dark:text-white">Engagement</h2>
+                <h2 className="text-xl font-bold mb-4 dark:text-white">
+                  Engagement
+                </h2>
                 <div className="relative w-full aspect-video mb-4">
                   {isStreaming ? (
                     <video
@@ -492,8 +511,13 @@ export default function LecturePage() {
                       onClick={startVideoStream}
                       className="absolute inset-0 w-full h-full rounded bg-gray-200 dark:bg-gray-700 flex cursor-pointer flex-col justify-center items-center"
                     >
-                      <Webcam strokeWidth={1} className='animate-bounce rounded-full size-8 p-1 bg-gray-300 dark:bg-gray-600' />
-                      <p className='text-sm text-gray-600 dark:text-gray-300'>Start Webcam</p>
+                      <Webcam
+                        strokeWidth={1}
+                        className="animate-bounce rounded-full size-8 p-1 bg-gray-300 dark:bg-gray-600"
+                      />
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        Start Webcam
+                      </p>
                     </div>
                   )}
                   <canvas
@@ -507,32 +531,62 @@ export default function LecturePage() {
                       className="rounded-full absolute bottom-2 left-2 z-20"
                       onClick={stopVideoStream}
                     >
-                      <Pause strokeWidth={1} fill='white' />
+                      <Pause strokeWidth={1} fill="white" />
                     </Button>
                   )}
                 </div>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-bold mb-4 dark:text-white">Course Progress</h2>
+                  <h2 className="text-xl font-bold mb-4 dark:text-white">
+                    Course Progress
+                  </h2>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium dark:text-white">Videos Watched</span>
-                    <span className="text-sm font-medium dark:text-white">{courseCompletion.videosWatched}/10</span>
+                    <span className="text-sm font-medium dark:text-white">
+                      Videos Watched
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
+                      {courseCompletion.videosWatched}/10
+                    </span>
                   </div>
-                  <Progress value={(courseCompletion.videosWatched / 10) * 100} className="w-full" />
+                  <Progress
+                    value={(courseCompletion.videosWatched / 10) * 100}
+                    className="w-full"
+                  />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium dark:text-white">Quizzes Taken</span>
-                    <span className="text-sm font-medium dark:text-white">{courseCompletion.quizzesTaken}/5</span>
+                    <span className="text-sm font-medium dark:text-white">
+                      Quizzes Taken
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
+                      {courseCompletion.quizzesTaken}/5
+                    </span>
                   </div>
-                  <Progress value={(courseCompletion.quizzesTaken / 5) * 100} className="w-full" />
+                  <Progress
+                    value={(courseCompletion.quizzesTaken / 5) * 100}
+                    className="w-full"
+                  />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium dark:text-white">Assignments Completed</span>
-                    <span className="text-sm font-medium dark:text-white">{courseCompletion.assignmentsCompleted}/3</span>
+                    <span className="text-sm font-medium dark:text-white">
+                      Assignments Completed
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
+                      {courseCompletion.assignmentsCompleted}/3
+                    </span>
                   </div>
-                  <Progress value={(courseCompletion.assignmentsCompleted / 3) * 100} className="w-full" />
+                  <Progress
+                    value={(courseCompletion.assignmentsCompleted / 3) * 100}
+                    className="w-full"
+                  />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium dark:text-white">Overall Progress</span>
-                    <span className="text-sm font-medium dark:text-white">{courseCompletion.overallProgress.toFixed(1)}%</span>
+                    <span className="text-sm font-medium dark:text-white">
+                      Overall Progress
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
+                      {courseCompletion.overallProgress.toFixed(1)}%
+                    </span>
                   </div>
-                  <Progress value={courseCompletion.overallProgress} className="w-full" />
+                  <Progress
+                    value={courseCompletion.overallProgress}
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>
@@ -548,7 +602,13 @@ export default function LecturePage() {
         </main>
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
         <ExpressionGraph sortedEmotion={sortedEmotions} />
-        {sortedEmotions.length > 0 && (<Bored isOpen={isOpen} setIsOpen={setIsOpen} sortedEmotion={sortedEmotions} />)}
+        {sortedEmotions.length > 0 && (
+          <Bored
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            sortedEmotion={sortedEmotions}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );

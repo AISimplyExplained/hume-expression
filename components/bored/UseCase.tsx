@@ -67,7 +67,7 @@ export default function UseCase({ setIsOpen, topic , setBoredTime}: Props) {
         <>
           <ul className="list-disc list-inside space-y-2 text-gray-700">
             {uses.map((val, i) => (
-              <li key={i + "val"} className="pl-2">
+              <li key={i + "val"} className="pl-2 text-lg">
                 {val}
               </li>
             ))}

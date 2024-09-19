@@ -9,10 +9,18 @@ import {
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 import { useBoredTime } from "@/lib/hooks/useBoredTime";
-import { X } from "lucide-react";
+import { ThumbsDown, ThumbsUp, X } from "lucide-react";
 import Quiz from "./bored/Quiz";
 import Poll from "./bored/Poll";
 import UseCase from "./bored/UseCase";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 interface Props {
   sortedEmotion: {
@@ -117,6 +125,8 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
 
   useEffect(() => {
     if (boredTime === boredServerTime && !isOpen) {
+      setDialogState("initial");
+      setExploreOpt("");
       setIsOpen(true);
     }
   }, [boredTime, isOpen, boredServerTime]);
@@ -135,73 +145,64 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
   const handleClose = () => {
     setIsOpen(false);
     setBoredTime(0);
-    setDialogState("initial"); // Reset dialog state when closing
-    setExploreOpt(""); // Reset explore option when closing
+    setDialogState("initial");
+    setExploreOpt("");
   };
 
   return (
-    <AlertDialog open={isOpen}>
-      <AlertDialogContent className="">
-        {dialogState === "initial" && (
-          <>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Need a Hand with Applied Transformer Architectures?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                We&#39;ve noticed you might be feeling a bit stuck or disengaged
-                with the material. Can we help you explore this concept in a
-                different way?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <Button
-                variant={"ghost"}
-                onClick={() => {
-                  setDialogState("no");
-                }}
-              >
-                NO, I&#39;m good to continue
-              </Button>
-              <Button
-                onClick={() => {
-                  setDialogState("yes");
-                }}
-              >
-                YES, I need help
-              </Button>
-            </AlertDialogFooter>
-          </>
-        )}
-        {dialogState === "no" && (
-          <>
-            <AlertDialogDescription>
-              Great! We&#39;ll keep going with the lesson. Feel free to pause or
-              ask for help anytime.
-            </AlertDialogDescription>
-            <Button onClick={handleClose}>Close</Button>
-          </>
-        )}
-        {dialogState === "yes" && exploreOpt === "" && (
-          <>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Explore this topic further</AlertDialogTitle>
-              <AlertDialogDescription>
-                No problem! How would you like to explore this topic further?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {options.map((option) => (
-                <Button key={option} onClick={() => handleOptionClick(option)}>
-                  {option}
-                </Button>
-              ))}
-            </div>
-          </>
-        )}
-        {dialogState === "yes" &&
-          renderContent(exploreOpt, setIsOpen, setBoredTime)}
-      </AlertDialogContent>
-    </AlertDialog>
+    <Dialog open={isOpen}>
+      {dialogState === "initial" && (
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              Need a Hand with Applied Transformer Architectures?
+            </DialogTitle>
+            <DialogDescription className="text-lg mx-1">
+              We&#39;ve noticed you might be feeling a bit stuck or disengaged
+              with the material. Can we help you explore this concept in a
+              different way?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex mt-4 ">
+            <Button onClick={() => handleClose()}>
+              <ThumbsDown className="w-6 h-6 text-white" />
+            </Button>
+            <Button onClick={() => setDialogState("yes")}>
+              <ThumbsUp className="w-6 h-6 text-white" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      )}
+      {dialogState === "yes" && (
+        <>
+          {exploreOpt === "" ? (
+            <DialogContent className="max-w-3xl  flex flex-col gap-8">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">
+                  Explore this topic further
+                </DialogTitle>
+                <DialogDescription className="mx-1 text-lg">
+                  No problem! How would you like to explore this topic further?
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-wrap gap-4 justify-center">
+                {options.map((option) => (
+                  <Button
+                    key={option}
+                    onClick={() => handleOptionClick(option)}
+                  >
+                    {option}
+                  </Button>
+                ))}
+              </div>
+            </DialogContent>
+          ) : (
+            <DialogContent className="max-w-3xl h-[500px] flex flex-col gap-8">
+              {renderContent(exploreOpt, setIsOpen, setBoredTime)}
+            </DialogContent>
+          )}
+        </>
+      )}
+    </Dialog>
   );
 }
