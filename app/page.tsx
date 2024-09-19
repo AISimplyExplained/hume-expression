@@ -610,11 +610,6 @@ export default function LecturePage() {
           />
         )}
       </div>
-      <Bored
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        sortedEmotion={sortedEmotions}
-      />
     </ErrorBoundary>
   );
 }
