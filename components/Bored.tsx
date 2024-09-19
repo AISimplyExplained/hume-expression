@@ -94,6 +94,7 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
+        return true
         if (isOpen) {
           return false;
         }

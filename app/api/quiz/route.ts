@@ -6,6 +6,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+export const maxDuration = 200; 
+
 interface RequestBody {
   topic: string;
 }

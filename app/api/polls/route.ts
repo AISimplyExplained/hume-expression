@@ -10,6 +10,8 @@ interface RequestBody {
   topic: string;
 }
 
+export const maxDuration = 200; 
+
 export async function POST(request: Request) {
   const {topic} = (await request.json()) as RequestBody;
 
