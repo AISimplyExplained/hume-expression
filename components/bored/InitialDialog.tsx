@@ -1,6 +1,12 @@
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "../ui/button";
-import { DialogHeader, DialogFooter, DialogContent, DialogDescription, DialogTitle } from "../ui/dialog";
+import {
+  DialogHeader,
+  DialogFooter,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "../ui/dialog";
 
 type DialogState = "initial" | "no" | "yes";
 
@@ -20,10 +26,12 @@ export const InitialDialog: React.FC<{
     </DialogHeader>
     <DialogFooter className="flex mt-4 ">
       <Button onClick={handleClose}>
-        <ThumbsDown className="w-6 h-6 text-white outline-none border-none" />
+        {/* <ThumbsDown className="w-6 h-6 text-white outline-none border-none" /> */}
+        No
       </Button>
       <Button onClick={() => setDialogState("yes")}>
-        <ThumbsUp className="w-6 h-6 text-white outline-none border-none" />
+        {/* <ThumbsUp className="w-6 h-6 text-white outline-none border-none" /> */}
+        Yes
       </Button>
     </DialogFooter>
   </DialogContent>
