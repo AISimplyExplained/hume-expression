@@ -13,9 +13,7 @@ type ExplorationOptionType =
   | "Test me with a quiz"
   | "";
 
-
 type DialogState = "initial" | "no" | "yes";
-
 
 const renderContent = (
   selectedOption: ExplorationOptionType,
@@ -74,8 +72,13 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
         for (let i = 0; i < sortedEmotion.length; i++) {
           if (sortedEmotion[i].score < 0.45) return false;
           if (["Boredom", "Disappointment"].includes(sortedEmotion[i].emotion))
-            console.log("Bored....", "emotion value", sortedEmotion[i].score)
-            return true;
+            console.log(
+              "Bored.... emotion value",
+              sortedEmotion[i].score,
+              "time",
+              boredTime
+            );
+          return true;
         }
         return false;
       };
@@ -86,7 +89,7 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
   }, [sortedEmotion, isOpen]);
 
   useEffect(() => {
-    if (boredTime === boredServerTime && !isOpen) {
+    if (boredTime >= boredServerTime && !isOpen) {
       setDialogState("initial");
       setExploreOpt("");
       setIsOpen(true);
