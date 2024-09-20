@@ -1,23 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, ChevronRight, X } from "lucide-react";
+import {
+  Trophy,
+  Star,
+  ChevronRight,
+  X,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
+import { DialogDescription, DialogTitle } from "../ui/dialog";
+import { shuffleArray } from "@/lib/shuffleArray";
+
+type ExplorationOptionType =
+  | ""
+  | "Show me a simple use-case"
+  | "Give me a quick poll"
+  | "Test me with a quiz";
 
 interface Question {
   question: string;
   options: string[];
-  correctAnswer: number;
+  correctAnswer: string;
 }
 
 interface QuizProps {
   topic: string;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setBoredTime: React.Dispatch<React.SetStateAction<number>>
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>;
+  setExploreOpt: Dispatch<SetStateAction<ExplorationOptionType>>;
 }
 
-const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
+const Quiz: React.FC<QuizProps> = ({
+  setIsOpen,
+  topic,
+  setBoredTime,
+  setExploreOpt,
+}) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -30,7 +56,7 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
       const res = await fetch("/api/quiz", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ topic: topic }),
       });
@@ -40,26 +66,29 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
       }
 
       const data = await res.json();
-      setQuestions(data.res.quiz)
-      console.log("data", data)
+      const quiz = data.res.quiz as Question[]
+      const shuffledQuiz = shuffleArray(quiz).slice(
+        0,
+        Math.min(3, quiz.length)
+      );
+      setQuestions(shuffledQuiz);
+      console.log("data", data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (questions.length === 0) {
       getRes();
     }
-  }, [])
+  }, []);
 
-
-
-  const handleAnswer = (answerIndex: number) => {
+  const handleAnswer = (answerIndex: number, option: string) => {
     setSelectedAnswer(answerIndex);
     setShowResult(true);
 
-    if (answerIndex === questions[currentQuestion].correctAnswer) {
+    if (option === questions[currentQuestion].correctAnswer) {
       setScore(score + 1);
     }
   };
@@ -75,21 +104,40 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
     }
   };
 
+  const getButtonVariant = (index: number, option: string) => {
+    if (!showResult) {
+      return selectedAnswer === index ? "default" : "outline";
+    }
+    if (option === questions[currentQuestion].correctAnswer) {
+      return "default";
+    }
+    return selectedAnswer === index ? "destructive" : "outline";
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto border-none px-1">
-      {quizCompleted && <Button
-        variant={"ghost"}
-        className="absolute right-2 top-2"
-        onClick={() => {
-          setBoredTime(0)
-          setIsOpen(false)
-        }}
-      >
-        <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
-      </Button>}
-      <CardHeader className='mb-3 space-y-4'>
-        <div className={`flex items-center w-full gap-4 ${questions.length === 0 ? 'justify-center' : "justify-between"}`}>
-          <h2 className="text-xl font-semibold text-center">Quiz Challenge</h2>
+      {quizCompleted && (
+        <Button
+          variant="ghost"
+          className="absolute right-2 top-2"
+          onClick={() => {
+            setBoredTime(0);
+            setIsOpen(false);
+          }}
+        >
+          <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+        </Button>
+      )}
+      <CardHeader className="mb-3 space-y-4">
+        <div
+          className={`flex items-center w-full gap-4 ${
+            questions.length === 0 ? "justify-center" : "justify-between"
+          }`}
+        >
+          <DialogTitle className="text-xl font-semibold text-center">
+            Quiz Challenge
+          </DialogTitle>
+          <DialogDescription></DialogDescription>
           {questions.length > 0 && (
             <Badge variant="secondary" className="text-lg">
               Question {currentQuestion + 1}/{questions.length}
@@ -97,68 +145,88 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
           )}
         </div>
         {questions.length > 0 && (
-          <Progress value={((currentQuestion + 1) / questions.length) * 100} className="mt-2" />
+          <Progress
+            value={((currentQuestion + 1) / questions.length) * 100}
+            className="mt-2"
+          />
         )}
       </CardHeader>
       <CardContent>
         {questions.length === 0 ? (
           <div className="text-center py-16">
-            <div className="spinner-border animate-spin inline-block w-8 h-8 border-l-4 border-t-4 border-e-[1] rounded-full text-blue-500 mb-4" role="status">
+            <div
+              className="spinner-border animate-spin inline-block w-8 h-8 border-l-4 border-t-4 border-e-[1] rounded-full text-blue-500 mb-4"
+              role="status"
+            >
               <span className="sr-only">Loading...</span>
             </div>
             <p className="text-lg text-gray-600">Loading questions...</p>
           </div>
         ) : !quizCompleted ? (
           <>
-            <h3 className="text-xl font-semibold mb-4">{questions[currentQuestion].question}</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              {questions[currentQuestion].question}
+            </h3>
             <div className="space-y-2">
-              {questions[currentQuestion].options.map((option, index) => (
-                <Button
-                  key={index}
-                  onClick={() => handleAnswer(index)}
-                  disabled={showResult}
-                  variant={
-                    selectedAnswer === index
-                      ? showResult
-                        ? index === questions[currentQuestion].correctAnswer
-                          ? "default"
-                          : "destructive"
-                        : "default"
-                      : "outline"
-                  }
-                  className="w-full justify-start text-left"
-                >
-                  {option}
-                  {showResult && index === questions[currentQuestion].correctAnswer && (
-                    <Star className="ml-2 h-4 w-4 text-yellow-400" />
-                  )}
-                </Button>
-              ))}
+              {questions[currentQuestion].options.map((option, index) => {
+                const variant = getButtonVariant(index, option)
+                const ans = option === questions[currentQuestion].correctAnswer;
+                return (
+                  <Button
+                    key={index}
+                    onClick={() => handleAnswer(index, option)}
+                    disabled={showResult}
+                    className={`w-full justify-start text-left text-lg font-medium ${ans && showResult && "bg-green-400"}`}
+                    variant={variant}
+                  >
+                    {option}
+                    {showResult &&
+                      option === questions[currentQuestion].correctAnswer && (
+                        <Star className="ml-2 h-4 w-4 text-yellow-400" />
+                      )}
+                  </Button>
+                );
+              })}
             </div>
           </>
         ) : (
           <div className="text-center">
             <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">Quiz Completed!</h3>
-            <p className="text-xl">Your score: {score}/{questions.length}</p>
+            <p className="text-xl">
+              Your score: {score}/{questions.length}
+            </p>
           </div>
         )}
       </CardContent>
-      <CardFooter className="justify-between">
+      <CardFooter className="justify-end gap-4">
         {showResult && !quizCompleted && (
           <Button onClick={nextQuestion} className="ml-auto">
-            {currentQuestion < questions.length - 1 ? "Next Question" : "Finish Quiz"} <ChevronRight className="ml-2 h-4 w-4" />
+            {currentQuestion < questions.length - 1
+              ? "Next Question"
+              : "Finish Quiz"}{" "}
+            <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         )}
-        {quizCompleted && <Button
-          className='ml-auto'
-          onClick={() => {
-            setBoredTime(0)
-            setIsOpen(false)
-          }}
-        >
-          close
-        </Button>}
+        {quizCompleted && (
+          <>
+            <Button
+              onClick={() => {
+                setExploreOpt("");
+              }}
+            >
+              <ThumbsDown className="w-6 h-6 text-white outline-none border-none" />
+            </Button>
+            <Button
+              onClick={() => {
+                setIsOpen(false);
+                setBoredTime(0);
+              }}
+            >
+              <ThumbsUp className="w-6 h-6 text-white outline-none border-none" />
+            </Button>
+          </>
+        )}
       </CardFooter>
     </Card>
   );

@@ -27,11 +27,11 @@ export const InitialDialog: React.FC<{
     <DialogFooter className="flex mt-4 ">
       <Button onClick={handleClose}>
         {/* <ThumbsDown className="w-6 h-6 text-white outline-none border-none" /> */}
-        No
+        No, I&#39;m good to proceed
       </Button>
       <Button onClick={() => setDialogState("yes")}>
         {/* <ThumbsUp className="w-6 h-6 text-white outline-none border-none" /> */}
-        Yes
+        Yes, I could use some help
       </Button>
     </DialogFooter>
   </DialogContent>

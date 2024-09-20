@@ -33,3 +33,12 @@ export const emotions: EmotionName[] = [
   "Interest",
   "Joy",
 ];
+
+
+export type ExplorationOptionType =
+  | "Show me a simple use-case"
+  | "Give me a quick poll"
+  | "Test me with a quiz"
+  | "";
+
+export type DialogState = "initial" | "no" | "yes";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,11 +7,15 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { ExplorationOptionType } from "@/lib/types";
+import { DialogDescription, DialogTitle } from "../ui/dialog";
 
 interface PollProps {
   topic: string;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setBoredTime: React.Dispatch<React.SetStateAction<number>>
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>;
+  setExploreOpt: Dispatch<SetStateAction<ExplorationOptionType>>;
 }
 
 type Question = {
@@ -19,7 +23,12 @@ type Question = {
   options: string[];
 };
 
-const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
+const Poll: React.FC<PollProps> = ({
+  setIsOpen,
+  topic,
+  setBoredTime,
+  setExploreOpt,
+}) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
@@ -50,7 +59,6 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
       }
 
       const data = await res.json();
-      console.log("Data", data);
       setQuestions(data.res.polls);
       console.log("data", data);
     } catch (error) {
@@ -67,7 +75,10 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
   if (questions.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="spinner-border animate-spin inline-block w-8 h-8 border-l-4 border-t-4 border-e-[1] rounded-full text-blue-500 mb-4" role="status">
+        <div
+          className="spinner-border animate-spin inline-block w-8 h-8 border-l-4 border-t-4 border-e-[1] rounded-full text-blue-500 mb-4"
+          role="status"
+        >
           <span className="sr-only">Loading...</span>
         </div>
         <p className="text-lg text-gray-600">Loading questions...</p>
@@ -78,12 +89,16 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
   return (
     <Card className="w-full mx-auto my-auto">
       <CardHeader>
-        <div className={`flex justify-between items-center ${pollCompleted ? 'hidden' : ""}`}>
-          <h2 className="text-2xl font-bold">Poll</h2>
+        <div
+          className={`flex justify-between items-center ${
+            pollCompleted ? "hidden" : ""
+          }`}
+        >
+          <DialogTitle className="text-2xl font-bold">Poll</DialogTitle>
           {!pollCompleted && (
-            <span className="text-lg">
+            <DialogDescription className="text-lg">
               Question {currentQuestion + 1}/{questions.length}
-            </span>
+            </DialogDescription>
           )}
         </div>
         {!pollCompleted && (
@@ -119,17 +134,25 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="justify-between">
+      <CardFooter className="justify-end gap-4">
         {pollCompleted && (
-          <Button
-            className="ml-auto"
-            onClick={() => {
-              setIsOpen(false);
-              setBoredTime(0)
-            }}
-          >
-            Close
-          </Button>
+          <>
+            <Button
+              onClick={() => {
+                setExploreOpt("");
+              }}
+            >
+              <ThumbsDown className="w-6 h-6 text-white outline-none border-none" />
+            </Button>
+            <Button
+              onClick={() => {
+                setIsOpen(false);
+                setBoredTime(0);
+              }}
+            >
+              <ThumbsUp className="w-6 h-6 text-white outline-none border-none" />
+            </Button>
+          </>
         )}
       </CardFooter>
     </Card>

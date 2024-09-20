@@ -1,30 +1,25 @@
 "use client";
 import { useBoredTime } from "@/lib/hooks/useBoredTime";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { ExploreOptions } from "./bored/ExploreOption";
 import { InitialDialog } from "./bored/InitialDialog";
 import Poll from "./bored/Poll";
 import UseCase from "./bored/UseCase";
 import Quiz from "./bored/Quiz";
 import { Dialog, DialogContent } from "./ui/dialog";
-
-type ExplorationOptionType =
-  | "Show me a simple use-case"
-  | "Give me a quick poll"
-  | "Test me with a quiz"
-  | "";
-
-type DialogState = "initial" | "no" | "yes";
+import { DialogState, ExplorationOptionType } from "@/lib/types";
 
 const renderContent = (
   selectedOption: ExplorationOptionType,
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  setBoredTime: React.Dispatch<React.SetStateAction<number>>
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>,
+  setExploreOpt: Dispatch<SetStateAction<ExplorationOptionType>>
 ) => {
   switch (selectedOption) {
     case "Show me a simple use-case":
       return (
         <UseCase
+          setExploreOpt={setExploreOpt}
           topic="Transformer Architectures"
           setIsOpen={setIsOpen}
           setBoredTime={setBoredTime}
@@ -33,6 +28,7 @@ const renderContent = (
     case "Give me a quick poll":
       return (
         <Poll
+          setExploreOpt={setExploreOpt}
           topic="Transformer Architectures"
           setIsOpen={setIsOpen}
           setBoredTime={setBoredTime}
@@ -41,6 +37,7 @@ const renderContent = (
     case "Test me with a quiz":
       return (
         <Quiz
+          setExploreOpt={setExploreOpt}
           setBoredTime={setBoredTime}
           topic="Transformer Architectures"
           setIsOpen={setIsOpen}
@@ -58,14 +55,20 @@ interface BoredProps {
   }[];
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isStreaming: boolean
+  isStreaming: boolean;
 }
 
-const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen, isStreaming }) => {
+const Bored: React.FC<BoredProps> = ({
+  sortedEmotion,
+  isOpen,
+  setIsOpen,
+  isStreaming,
+}) => {
   const [boredTime, setBoredTime] = useState(0);
   const { boredTime: boredServerTime } = useBoredTime();
   const [dialogState, setDialogState] = useState<DialogState>("initial");
   const [exploreOpt, setExploreOpt] = useState<ExplorationOptionType>("");
+  const [lastScore, setLastScore] = useState(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -76,26 +79,34 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen, isStrea
           if (
             ["Boredom", "Disappointment"].includes(sortedEmotion[i].emotion)
           ) {
+
             console.log(
               "Bored.... emotion value",
               sortedEmotion[i].score,
               "time",
-              boredTime
+              boredTime, boredServerTime
             );
+            if(lastScore === sortedEmotion[i].score) {
+              return false
+            }
+            setLastScore(sortedEmotion[i].score)
             return true;
           }
         }
         return false;
       };
       const check = isBored();
-      if (check === true) setBoredTime((prev) => prev + 1);
+      if (check === true){
+       setBoredTime((prev) => prev + 1);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [sortedEmotion, isOpen]);
+  }, [sortedEmotion, isOpen, lastScore]);
 
   useEffect(() => {
     if (boredTime === boredServerTime && !isOpen) {
+      console.log("bored time", boredTime)
       setDialogState("initial");
       setExploreOpt("");
       setIsOpen(true);
@@ -133,8 +144,13 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen, isStrea
           {exploreOpt === "" ? (
             <ExploreOptions handleOptionClick={handleOptionClick} />
           ) : (
-            <DialogContent className="max-w-3xl h-[500px] flex flex-col gap-8">
-              {renderContent(exploreOpt, setIsOpen, setBoredTime)}
+            <DialogContent className="max-w-3xl h-[550px] flex flex-col gap-8">
+              {renderContent(
+                exploreOpt,
+                setIsOpen,
+                setBoredTime,
+                setExploreOpt
+              )}
             </DialogContent>
           )}
         </>

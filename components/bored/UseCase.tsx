@@ -1,23 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import { Button } from '../ui/button'
-import { X } from 'lucide-react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { ExplorationOptionType } from "@/lib/types";
+import { DialogDescription, DialogTitle } from "../ui/dialog";
+import { shuffleArray } from "@/lib/shuffleArray";
 
 interface Props {
-  topic: string
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setBoredTime: React.Dispatch<React.SetStateAction<number>>
+  topic: string;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setBoredTime: React.Dispatch<React.SetStateAction<number>>;
+  setExploreOpt: Dispatch<SetStateAction<ExplorationOptionType>>;
 }
 
-export default function UseCase({ setIsOpen, topic , setBoredTime}: Props) {
-  const [uses, setUses] = useState<string[]>([])
+export default function UseCase({
+  setIsOpen,
+  topic,
+  setBoredTime,
+  setExploreOpt,
+}: Props) {
+  const [uses, setUses] = useState<string[]>([]);
 
   const getRes = async () => {
-    setUses([])
+    setUses([]);
     try {
       const res = await fetch("/api/use-case", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ topic: topic }),
       });
@@ -27,36 +36,28 @@ export default function UseCase({ setIsOpen, topic , setBoredTime}: Props) {
       }
 
       const data = await res.json();
-      setUses(data.res.points)
+
+      const points = data.res.points as string[]
+      const shuffle = shuffleArray(points).slice(0, Math.min(4, points.length));
+      setUses(shuffle);
+      console.log("Res", data.res.points)
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (uses.length === 0) {
       getRes();
     }
-  }, [])
-
+  }, []);
 
   return (
     <div className="p-1">
-      <Button
-        variant={"ghost"}
-        className="absolute right-2 top-2"
-        onClick={() => {
-          setIsOpen(false)
-          setBoredTime(0)
-        }}
-      >
-        <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
-      </Button>
-
-      <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">
+      <DialogTitle className="text-2xl font-bold text-center text-gray-800 mb-4">
         Real-world Application
-      </h3>
-
+      </DialogTitle>
+      <DialogDescription></DialogDescription>
       <h1 className="text-xl font-semibold text-center text-blue-600 mb-4">
         {topic}
       </h1>
@@ -72,9 +73,28 @@ export default function UseCase({ setIsOpen, topic , setBoredTime}: Props) {
               </li>
             ))}
           </ul>
-          <Button className='w-full mt-4' onClick={getRes} >New Use Case</Button>
+          <div className=" flex justify-around mt-4">
+            <Button
+              onClick={() => {
+                setExploreOpt("");
+              }}
+            >
+              <ThumbsDown className="w-6 h-6 text-white outline-none border-none" />
+            </Button>
+            <Button
+              onClick={() => {
+                setIsOpen(false);
+                setBoredTime(0);
+              }}
+            >
+              <ThumbsUp className="w-6 h-6 text-white outline-none border-none" />
+            </Button>
+          </div>
+          {/* <Button className="w-full mt-4" onClick={getRes}>
+            New Use Case
+          </Button> */}
         </>
       )}
     </div>
-  )
+  );
 }
