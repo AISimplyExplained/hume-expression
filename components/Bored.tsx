@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useBoredTime } from "@/lib/hooks/useBoredTime";
 import { useState, useEffect } from "react";
 import { ExploreOptions } from "./bored/ExploreOption";
@@ -58,9 +58,10 @@ interface BoredProps {
   }[];
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isStreaming: boolean
 }
 
-const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
+const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen, isStreaming }) => {
   const [boredTime, setBoredTime] = useState(0);
   const { boredTime: boredServerTime } = useBoredTime();
   const [dialogState, setDialogState] = useState<DialogState>("initial");
@@ -69,22 +70,24 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
-        console.log("is bored")
-        if (isOpen || sortedEmotion.length === 0) return false;
+        if (isOpen || sortedEmotion.length === 0 || !isStreaming) return false;
         for (let i = 0; i < sortedEmotion.length; i++) {
           if (sortedEmotion[i].score < 0.45) return false;
-          if (["Boredom", "Disappointment"].includes(sortedEmotion[i].emotion))
+          if (
+            ["Boredom", "Disappointment"].includes(sortedEmotion[i].emotion)
+          ) {
             console.log(
               "Bored.... emotion value",
               sortedEmotion[i].score,
               "time",
               boredTime
             );
-          return true;
+            return true;
+          }
         }
         return false;
       };
-      const check = isBored()
+      const check = isBored();
       if (check === true) setBoredTime((prev) => prev + 1);
     }, 1000);
 

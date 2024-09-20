@@ -642,7 +642,9 @@ export default function LecturePage() {
                         : "bg-red-400 hover:bg-red-300"
                     }`}
                     size={"icon"}
-                    disabled={socketStatus === "Connecting..." || isSocketConnected}
+                    disabled={
+                      socketStatus === "Connecting..." || isSocketConnected
+                    }
                     onClick={() => {
                       if (!isSocketConnected) {
                         connect();
@@ -758,6 +760,7 @@ export default function LecturePage() {
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
         <ExpressionGraph sortedEmotion={sortedEmotions} />
         <Bored
+          isStreaming={isStreaming}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           sortedEmotion={sortedEmotions}
