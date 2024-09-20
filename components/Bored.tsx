@@ -1,3 +1,4 @@
+"use client"
 import { useBoredTime } from "@/lib/hooks/useBoredTime";
 import { useState, useEffect } from "react";
 import { ExploreOptions } from "./bored/ExploreOption";
@@ -82,14 +83,15 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
         }
         return false;
       };
-      if (isBored()) setBoredTime((prev) => prev + 1);
+      const check = isBored()
+      if (check === true) setBoredTime((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [sortedEmotion, isOpen]);
 
   useEffect(() => {
-    if (boredTime >= boredServerTime && !isOpen) {
+    if (boredTime === boredServerTime && !isOpen) {
       setDialogState("initial");
       setExploreOpt("");
       setIsOpen(true);
