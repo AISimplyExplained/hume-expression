@@ -14,9 +14,8 @@ export const InitialDialog: React.FC<{
         Need a Hand with Applied Transformer Architectures?
       </DialogTitle>
       <DialogDescription className="text-lg mx-1">
-        We've noticed you might be feeling a bit stuck or disengaged
-        with the material. Can we help you explore this concept in a
-        different way?
+        We&#39;ve noticed you might be feeling a bit stuck or disengaged with
+        the material. Can we help you explore this concept in a different way?
       </DialogDescription>
     </DialogHeader>
     <DialogFooter className="flex mt-4 ">
