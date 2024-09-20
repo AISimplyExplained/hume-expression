@@ -1,48 +1,21 @@
-import React, { useEffect, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
 import { useBoredTime } from "@/lib/hooks/useBoredTime";
-import { ThumbsDown, ThumbsUp, X } from "lucide-react";
-import Quiz from "./bored/Quiz";
+import { useState, useEffect } from "react";
+import { ExploreOptions } from "./bored/ExploreOption";
+import { InitialDialog } from "./bored/InitialDialog";
 import Poll from "./bored/Poll";
 import UseCase from "./bored/UseCase";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import Quiz from "./bored/Quiz";
+import { Dialog, DialogContent } from "./ui/dialog";
 
-interface Props {
-  sortedEmotion: {
-    emotion: string;
-    score: number;
-  }[];
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-type DialogState = "initial" | "no" | "yes";
 type ExplorationOptionType =
   | "Show me a simple use-case"
   | "Give me a quick poll"
   | "Test me with a quiz"
   | "";
 
-const options: ExplorationOptionType[] = [
-  "Show me a simple use-case",
-  "Give me a quick poll",
-  "Test me with a quiz",
-];
+
+type DialogState = "initial" | "no" | "yes";
+
 
 const renderContent = (
   selectedOption: ExplorationOptionType,
@@ -58,7 +31,6 @@ const renderContent = (
           setBoredTime={setBoredTime}
         />
       );
-
     case "Give me a quick poll":
       return (
         <Poll
@@ -67,7 +39,6 @@ const renderContent = (
           setBoredTime={setBoredTime}
         />
       );
-
     case "Test me with a quiz":
       return (
         <Quiz
@@ -76,16 +47,21 @@ const renderContent = (
           setIsOpen={setIsOpen}
         />
       );
-
-    case "":
-      return null;
-
     default:
       return null;
   }
 };
 
-export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
+interface BoredProps {
+  sortedEmotion: {
+    emotion: string;
+    score: number;
+  }[];
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
   const [boredTime, setBoredTime] = useState(0);
   const { boredTime: boredServerTime } = useBoredTime();
   const [dialogState, setDialogState] = useState<DialogState>("initial");
@@ -94,35 +70,19 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
-        return true
-        if (isOpen) {
-          return false;
-        }
-
-        if (sortedEmotion.length === 0) {
-          return false;
-        }
+        if (isOpen || sortedEmotion.length === 0) return false;
         for (let i = 0; i < sortedEmotion.length; i++) {
-          if (sortedEmotion[i].score < 0.4) {
-            return false;
-          }
-          if (
-            sortedEmotion[i].emotion === "Boredom" ||
-            sortedEmotion[i].emotion === "Disappointment"
-          ) {
+          if (sortedEmotion[i].score < 0.4) return false;
+          if (["Boredom", "Disappointment"].includes(sortedEmotion[i].emotion))
             return true;
-          }
         }
         return false;
       };
-      const check = isBored();
-      if (check) {
-        setBoredTime((prev) => prev + 1);
-      }
+      if (isBored()) setBoredTime((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [sortedEmotion]);
+  }, [sortedEmotion, isOpen]);
 
   useEffect(() => {
     if (boredTime === boredServerTime && !isOpen) {
@@ -130,7 +90,7 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
       setExploreOpt("");
       setIsOpen(true);
     }
-  }, [boredTime, isOpen, boredServerTime]);
+  }, [boredTime, isOpen, boredServerTime, setIsOpen]);
 
   useEffect(() => {
     if (dialogState !== "initial" && boredTime === 0) {
@@ -153,50 +113,15 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
   return (
     <Dialog open={isOpen}>
       {dialogState === "initial" && (
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">
-              Need a Hand with Applied Transformer Architectures?
-            </DialogTitle>
-            <DialogDescription className="text-lg mx-1">
-              We&#39;ve noticed you might be feeling a bit stuck or disengaged
-              with the material. Can we help you explore this concept in a
-              different way?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex mt-4 ">
-            <Button onClick={() => handleClose()}>
-              <ThumbsDown className="w-6 h-6 text-white" />
-            </Button>
-            <Button onClick={() => setDialogState("yes")}>
-              <ThumbsUp className="w-6 h-6 text-white" />
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+        <InitialDialog
+          handleClose={handleClose}
+          setDialogState={setDialogState}
+        />
       )}
       {dialogState === "yes" && (
         <>
           {exploreOpt === "" ? (
-            <DialogContent className="max-w-3xl  flex flex-col gap-8">
-              <DialogHeader>
-                <DialogTitle className="text-2xl">
-                  Explore this topic further
-                </DialogTitle>
-                <DialogDescription className="mx-1 text-lg">
-                  No problem! How would you like to explore this topic further?
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex flex-wrap gap-4 justify-center">
-                {options.map((option) => (
-                  <Button
-                    key={option}
-                    onClick={() => handleOptionClick(option)}
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
-            </DialogContent>
+            <ExploreOptions handleOptionClick={handleOptionClick} />
           ) : (
             <DialogContent className="max-w-3xl h-[500px] flex flex-col gap-8">
               {renderContent(exploreOpt, setIsOpen, setBoredTime)}
@@ -206,4 +131,6 @@ export default function Bored({ sortedEmotion, isOpen, setIsOpen }: Props) {
       )}
     </Dialog>
   );
-}
+};
+
+export default Bored;

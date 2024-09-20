@@ -99,8 +99,6 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
   const Render = () => {
     if (!currentChapter) return null;
 
-
-
     switch (currentChapter.type) {
       case 'video':
         if (currentChapter.content.includes('youtube.com')) {
