@@ -34,6 +34,7 @@ import {
   HelpCircle,
   Maximize,
   Minimize,
+  RadioTower,
 } from "lucide-react";
 import Teleprompter from "@/components/Teleprompter";
 import EmotionSpiderChart from "@/components/EmotionSpider";
@@ -366,7 +367,7 @@ export default function LecturePage() {
     const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
 
     serverReadyRef.current = true;
-    console.log(`Connecting to websocket... (using ${socketUrl})`);
+    console.log(`Connecting to websocket... )`);
 
     setSocketStatus("Connecting...");
 
@@ -630,9 +631,27 @@ export default function LecturePage() {
                 />
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h2 className="text-xl font-bold mb-4 dark:text-white">
-                  Engagement
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold dark:text-white">
+                    Engagement
+                  </h2>
+                  <Button
+                    className={`${
+                      isSocketConnected
+                        ? "bg-green-500 hover:bg-green-500"
+                        : "bg-red-400 hover:bg-red-300"
+                    }`}
+                    size={"icon"}
+                    disabled={socketStatus === "Connecting..." || isSocketConnected}
+                    onClick={() => {
+                      if (!isSocketConnected) {
+                        connect();
+                      }
+                    }}
+                  >
+                    <RadioTower />
+                  </Button>
+                </div>
                 <div className="relative w-full aspect-video mb-4">
                   {isStreaming ? (
                     <video
