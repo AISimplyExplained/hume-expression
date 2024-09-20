@@ -81,7 +81,7 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
         variant={"ghost"}
         className="absolute right-2 top-2"
         onClick={() => {
-          setBoredTime(-2)
+          setBoredTime(0)
           setIsOpen(false)
         }}
       >
@@ -153,7 +153,7 @@ const Quiz: React.FC<QuizProps> = ({ setIsOpen, topic, setBoredTime }) => {
         {quizCompleted && <Button
           className='ml-auto'
           onClick={() => {
-            setBoredTime(-2)
+            setBoredTime(0)
             setIsOpen(false)
           }}
         >

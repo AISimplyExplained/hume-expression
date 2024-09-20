@@ -125,7 +125,7 @@ const Poll: React.FC<PollProps> = ({ setIsOpen, topic,setBoredTime}) => {
             className="ml-auto"
             onClick={() => {
               setIsOpen(false);
-              setBoredTime(-2)
+              setBoredTime(0)
             }}
           >
             Close

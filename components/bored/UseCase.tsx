@@ -47,7 +47,7 @@ export default function UseCase({ setIsOpen, topic , setBoredTime}: Props) {
         className="absolute right-2 top-2"
         onClick={() => {
           setIsOpen(false)
-          setBoredTime(-2)
+          setBoredTime(0)
         }}
       >
         <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />

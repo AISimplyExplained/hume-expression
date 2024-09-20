@@ -69,6 +69,7 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
+        console.log("is bored")
         if (isOpen || sortedEmotion.length === 0) return false;
         for (let i = 0; i < sortedEmotion.length; i++) {
           if (sortedEmotion[i].score < 0.45) return false;
@@ -111,7 +112,7 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
 
   const handleClose = () => {
     setIsOpen(false);
-    setBoredTime(-2);
+    setBoredTime(0);
     setDialogState("initial");
     setExploreOpt("");
   };
