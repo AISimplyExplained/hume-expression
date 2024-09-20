@@ -75,7 +75,7 @@ const Bored: React.FC<BoredProps> = ({
       const isBored = () => {
         if (isOpen || sortedEmotion.length === 0 || !isStreaming) return false;
         for (let i = 0; i < sortedEmotion.length; i++) {
-          if (sortedEmotion[i].score < 0.45) return false;
+          if (sortedEmotion[i].score < 0.40) return false;
           if (
             ["Boredom", "Disappointment"].includes(sortedEmotion[i].emotion)
           ) {
