@@ -105,7 +105,7 @@ const Bored: React.FC<BoredProps> = ({ sortedEmotion, isOpen, setIsOpen }) => {
 
   const handleClose = () => {
     setIsOpen(false);
-    setBoredTime(0);
+    setBoredTime(-2);
     setDialogState("initial");
     setExploreOpt("");
   };
