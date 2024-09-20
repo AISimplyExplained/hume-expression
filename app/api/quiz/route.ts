@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "Using provided topic please generate quiz based on the topic provided. Generate 12 question.",
+            "Using provided topic please generate quiz based on the topic provided. Generate 5 question.",
         },
         {
           role: "assistant",

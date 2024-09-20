@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "Using provided topic please generate use cases of this topic 8 points",
+            "Using provided topic please generate use cases of this topic 5 points",
         },
         {
           role: "assistant",
