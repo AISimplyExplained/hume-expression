@@ -11,36 +11,11 @@ import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ErrorBoundary } from "react-error-boundary";
-import {
-  BookOpen,
-  List,
-  PlayCircle,
-  User,
-  Video,
-  Menu,
-  Search,
-  Bell,
-  Settings,
-  X,
-  Moon,
-  Sun,
-  Webcam,
-  Pause,
-  ChevronDown,
-  ChevronRight,
-  FileText,
-  HelpCircle,
-  Maximize,
-  Minimize,
-  RadioTower,
-} from "lucide-react";
-import Teleprompter from "@/components/Teleprompter";
+import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower } from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
-import Quiz from "@/components/Quiz";
 import { Emotion, EmotionMap } from "@/lib/data/emotion";
 import Bored from "@/components/Bored";
 import { lessonContent } from "./lessonContent";
@@ -333,6 +308,7 @@ export default function LecturePage() {
     (moduleIndex: number, chapterIndex: number) => {
       const selectedChapter = curriculum[moduleIndex].chapters[chapterIndex];
       setCurrentChapter(selectedChapter);
+      setCurrentLesson(curriculum[moduleIndex].title);
     },
     [curriculum]
   );
@@ -350,6 +326,7 @@ export default function LecturePage() {
   const [warning, setWarning] = useState<string>("");
   const isStreamingRef = useRef<Boolean | null>(false);
 
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -620,6 +597,8 @@ export default function LecturePage() {
                     : "Welcome to Applied AI"}
                 </h2>
                 <RenderChapterContent
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
                   currentChapter={currentChapter}
                   currentLesson={currentLesson}
                   isOpen={isOpen}
@@ -760,6 +739,8 @@ export default function LecturePage() {
         <EmotionSpiderChart sortedEmotions={sortedEmotions} />
         <ExpressionGraph sortedEmotion={sortedEmotions} />
         <Bored
+          isPlaying={isPlaying}
+          currentLesson={currentLesson}
           isStreaming={isStreaming}
           isOpen={isOpen}
           setIsOpen={setIsOpen}

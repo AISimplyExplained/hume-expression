@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         },
         {
           role: "user",
-          content: `Generate the result in this formate.
+          content: `Generate the result in this formate. Do not add any other prefix. It will be problem for string parsing. So don't generate any other string.
 "{\"topic\": \"topic\",\n              \"points\": [\"first point\", \"second point\"]}"
           `,
         },

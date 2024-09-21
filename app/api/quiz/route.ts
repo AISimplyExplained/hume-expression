@@ -1,4 +1,3 @@
-
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
@@ -6,14 +5,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-export const maxDuration = 50; 
+export const maxDuration = 50;
 
 interface RequestBody {
   topic: string;
 }
 
 export async function POST(request: Request) {
-  const {topic} = (await request.json()) as RequestBody;
+  const { topic } = (await request.json()) as RequestBody;
 
   if (!topic) {
     return NextResponse.json(
@@ -37,7 +36,7 @@ export async function POST(request: Request) {
         },
         {
           role: "user",
-          content: `Generate the result in this formate.
+          content: `Generate the result in this formate. Do not add any other prefix. It will be problem for string parsing. So don't generate any other string. 
   "{\"topic\": \"topic\",\n  \"quiz\": [ {\"question\": \"here is the question.\", \"options\": [\"...\", \"...\" ], \"correctAnswer\" : \"answer\"'}, ]}"
           `,
         },
@@ -52,6 +51,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
 
     const res = JSON.parse(content);
 

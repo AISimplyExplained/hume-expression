@@ -1,99 +1,110 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { PlayIcon, PauseIcon, RotateCcwIcon, MoreVertical } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
+import React, { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { PlayIcon, PauseIcon, RotateCcwIcon, MoreVertical } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 interface TeleprompterProps {
   content: string;
-  isOpen: boolean
+  isOpen: boolean;
+  isPlaying: boolean;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Teleprompter: React.FC<TeleprompterProps> = ({ content,isOpen }) => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [speed, setSpeed] = useState(1)
-  const [currentPosition, setCurrentPosition] = useState(0)
-  const [progress, setProgress] = useState(0)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+const Teleprompter: React.FC<TeleprompterProps> = ({
+  content,
+  isOpen,
+  isPlaying,
+  setIsPlaying,
+}) => {
+  const [speed, setSpeed] = useState(1);
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let startTime: number
-    let animationFrame: number
+    let startTime: number;
+    let animationFrame: number;
 
     const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp - (currentPosition / speed) * 20
-      const elapsed = timestamp - startTime
+      if (!startTime) startTime = timestamp - (currentPosition / speed) * 20;
+      const elapsed = timestamp - startTime;
 
       if (contentRef.current && containerRef.current) {
-        const contentHeight = contentRef.current.scrollHeight
-        const containerHeight = containerRef.current.clientHeight
-        const totalScrollDistance = contentHeight - containerHeight
-        const duration = (totalScrollDistance / speed) * 20
+        const contentHeight = contentRef.current.scrollHeight;
+        const containerHeight = containerRef.current.clientHeight;
+        const totalScrollDistance = contentHeight - containerHeight;
+        const duration = (totalScrollDistance / speed) * 20;
 
-        const yPosition = Math.min((elapsed / duration) * totalScrollDistance, totalScrollDistance)
-        contentRef.current.style.transform = `translateY(-${yPosition}px)`
-        setCurrentPosition(yPosition)
-        setProgress((yPosition / totalScrollDistance) * 100)
+        const yPosition = Math.min(
+          (elapsed / duration) * totalScrollDistance,
+          totalScrollDistance
+        );
+        contentRef.current.style.transform = `translateY(-${yPosition}px)`;
+        setCurrentPosition(yPosition);
+        setProgress((yPosition / totalScrollDistance) * 100);
 
         if (yPosition < totalScrollDistance) {
-          animationFrame = requestAnimationFrame(animate)
+          animationFrame = requestAnimationFrame(animate);
         } else {
-          setIsPlaying(false)
+          setIsPlaying(false);
         }
       }
-    }
+    };
 
     if (isPlaying) {
-      animationFrame = requestAnimationFrame(animate)
+      animationFrame = requestAnimationFrame(animate);
     }
 
     return () => {
       if (animationFrame) {
-        cancelAnimationFrame(animationFrame)
+        cancelAnimationFrame(animationFrame);
       }
-    }
-  }, [isPlaying, speed, currentPosition])
+    };
+  }, [isPlaying, speed, currentPosition]);
 
   useEffect(() => {
-    if(isOpen) {
-      setIsPlaying(false)
+    if (isOpen) {
+      setIsPlaying(false);
     }
-  },[isOpen])
+  }, [isOpen]);
 
-  const togglePlay = () => setIsPlaying(!isPlaying)
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
 
-  const handleSpeedChange = (newSpeed: number) => setSpeed(newSpeed)
+  const handleSpeedChange = (newSpeed: number) => setSpeed(newSpeed);
 
   const resetTeleprompter = () => {
-    setIsPlaying(false)
-    setCurrentPosition(0)
-    setProgress(0)
+    setIsPlaying(false);
+    setCurrentPosition(0);
+    setProgress(0);
     if (contentRef.current) {
-      contentRef.current.style.transition = 'none'
-      contentRef.current.style.transform = 'translateY(0)'
-      contentRef.current.offsetHeight
-      contentRef.current.style.transition = ''
+      contentRef.current.style.transition = "none";
+      contentRef.current.style.transform = "translateY(0)";
+      contentRef.current.offsetHeight;
+      contentRef.current.style.transition = "";
     }
-  }
+  };
 
   const handleProgressChange = (newProgress: number[]) => {
     if (contentRef.current && containerRef.current) {
-      const contentHeight = contentRef.current.scrollHeight
-      const containerHeight = containerRef.current.clientHeight
-      const totalScrollDistance = contentHeight - containerHeight
-      const newPosition = (newProgress[0] / 100) * totalScrollDistance
-      setCurrentPosition(newPosition)
-      contentRef.current.style.transform = `translateY(-${newPosition}px)`
-      setProgress(newProgress[0])
+      const contentHeight = contentRef.current.scrollHeight;
+      const containerHeight = containerRef.current.clientHeight;
+      const totalScrollDistance = contentHeight - containerHeight;
+      const newPosition = (newProgress[0] / 100) * totalScrollDistance;
+      setCurrentPosition(newPosition);
+      contentRef.current.style.transform = `translateY(-${newPosition}px)`;
+      setProgress(newProgress[0]);
     }
-  }
+  };
 
   return (
     <div className="w-full h-full bg-background flex flex-col">
@@ -110,14 +121,26 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content,isOpen }) => {
           <ReactMarkdown
             className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed max-w-[90%] mx-auto"
             components={{
-              h1: ({node, ...props}) => <h1 className="mt-8 mb-4 text-2xl font-bold" {...props} />,
-              h2: ({node, ...props}) => <h2 className="mt-6 mb-3 text-xl font-semibold" {...props} />,
-              h3: ({node, ...props}) => <h3 className="mt-4 mb-2 text-lg font-medium" {...props} />,
-              h4: ({node, ...props}) => <h4 className="mt-3 mb-2 text-base font-medium" {...props} />,
-              h5: ({node, ...props}) => <h5 className="mt-2 mb-1 text-sm font-medium" {...props} />,
-              h6: ({node, ...props}) => <h6 className="mt-2 mb-1 text-sm font-medium" {...props} />,
+              h1: ({ node, ...props }) => (
+                <h1 className="mt-8 mb-4 text-2xl font-bold" {...props} />
+              ),
+              h2: ({ node, ...props }) => (
+                <h2 className="mt-6 mb-3 text-xl font-semibold" {...props} />
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 className="mt-4 mb-2 text-lg font-medium" {...props} />
+              ),
+              h4: ({ node, ...props }) => (
+                <h4 className="mt-3 mb-2 text-base font-medium" {...props} />
+              ),
+              h5: ({ node, ...props }) => (
+                <h5 className="mt-2 mb-1 text-sm font-medium" {...props} />
+              ),
+              h6: ({ node, ...props }) => (
+                <h6 className="mt-2 mb-1 text-sm font-medium" {...props} />
+              ),
               code: ({ node, inline, className, children, ...props }: any) => {
-                const match = /language-(\w+)/.exec(className || '')
+                const match = /language-(\w+)/.exec(className || "");
                 return !inline ? (
                   <pre className="text-xs sm:text-sm md:text-base lg:text-lg bg-gray-800 text-white p-2 rounded whitespace-pre-wrap break-words my-4">
                     <code className={className} {...props}>
@@ -125,11 +148,14 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content,isOpen }) => {
                     </code>
                   </pre>
                 ) : (
-                  <code className="bg-gray-200 dark:bg-gray-700 rounded px-1" {...props}>
+                  <code
+                    className="bg-gray-200 dark:bg-gray-700 rounded px-1"
+                    {...props}
+                  >
                     {children}
                   </code>
-                )
-              }
+                );
+              },
             }}
           >
             {content}
@@ -147,10 +173,24 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content,isOpen }) => {
             className="w-full"
           />
           <div className="flex items-center justify-between gap-2">
-            <Button onClick={togglePlay} variant="outline" size="icon" className="w-10 h-10">
-              {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5" />}
+            <Button
+              onClick={togglePlay}
+              variant="outline"
+              size="icon"
+              className="w-10 h-10"
+            >
+              {isPlaying ? (
+                <PauseIcon className="h-5 w-5" />
+              ) : (
+                <PlayIcon className="h-5 w-5" />
+              )}
             </Button>
-            <Button onClick={resetTeleprompter} variant="outline" size="icon" className="w-10 h-10">
+            <Button
+              onClick={resetTeleprompter}
+              variant="outline"
+              size="icon"
+              className="w-10 h-10"
+            >
               <RotateCcwIcon className="h-5 w-5" />
             </Button>
             <DropdownMenu>
@@ -160,17 +200,25 @@ const Teleprompter: React.FC<TeleprompterProps> = ({ content,isOpen }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onSelect={() => handleSpeedChange(0.5)}>0.5x</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleSpeedChange(1)}>1x</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleSpeedChange(1.5)}>1.5x</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleSpeedChange(2)}>2x</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(0.5)}>
+                  0.5x
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(1)}>
+                  1x
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(1.5)}>
+                  1.5x
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleSpeedChange(2)}>
+                  2x
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Teleprompter
+export default Teleprompter;

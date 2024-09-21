@@ -13,11 +13,12 @@ type DialogState = "initial" | "no" | "yes";
 export const InitialDialog: React.FC<{
   handleClose: () => void;
   setDialogState: React.Dispatch<React.SetStateAction<DialogState>>;
-}> = ({ handleClose, setDialogState }) => (
+  currentLesson: string
+}> = ({ handleClose, setDialogState, currentLesson }) => (
   <DialogContent className="max-w-2xl">
     <DialogHeader>
       <DialogTitle className="text-2xl">
-        Need a Hand with Applied Transformer Architectures?
+        Need a Hand with {currentLesson}?
       </DialogTitle>
       <DialogDescription className="text-lg mx-1">
         We&#39;ve noticed you might be feeling a bit stuck or disengaged with
@@ -26,11 +27,9 @@ export const InitialDialog: React.FC<{
     </DialogHeader>
     <DialogFooter className="flex mt-4 ">
       <Button onClick={handleClose}>
-        {/* <ThumbsDown className="w-6 h-6 text-white outline-none border-none" /> */}
         No, I&#39;m good to proceed
       </Button>
       <Button onClick={() => setDialogState("yes")}>
-        {/* <ThumbsUp className="w-6 h-6 text-white outline-none border-none" /> */}
         Yes, I could use some help
       </Button>
     </DialogFooter>
