@@ -84,10 +84,10 @@ Understanding the Transformer architecture is crucial for working with modern AI
 ## Introduction
 While both Transformers and GANs have revolutionized AI, they serve different purposes and have distinct architectures.
 
-## Transformers
-- Primarily used for sequence-to-sequence tasks
-- Excel in natural language processing
-- Use self-attention mechanisms
+1. **Transformers**
+  - Primarily used for sequence-to-sequence tasks
+  - Excel in natural language processing
+  - Use self-attention mechanisms
 
 Here's a basic outline of a Transformer in PyTorch:
 
@@ -116,10 +116,10 @@ out = model(src, tgt)
 print(out.shape)  # Output: torch.Size([20, 32, 512])
 \`\`\`
 
-## GANs (Generative Adversarial Networks)
-- Used for generating new data
-- Consist of a generator and a discriminator
-- Excel in image generation and style transfer
+2. **GANs (Generative Adversarial Networks)**
+  - Used for generating new data
+  - Consist of a generator and a discriminator
+  - Excel in image generation and style transfer
 
 Here's a basic outline of a GAN in PyTorch:
 
