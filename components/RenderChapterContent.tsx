@@ -4,6 +4,7 @@ import { Minimize, Maximize } from "lucide-react";
 import Teleprompter from "./Teleprompter";
 import Quiz from "./Quiz";
 import { Chapter } from "./Curriculum";
+import { useTitleStore } from "@/lib/store";
 
 interface CourseCompletion {
   quizzesTaken: number;
@@ -44,6 +45,7 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
   isPlaying,
   setIsPlaying,
 }) => {
+  const {setTitle} = useTitleStore()
   const videoContentRef = useRef<HTMLVideoElement | null>(null);
   const youtubePlayerRef = useRef<any>(null);
   const [youtubeReady, setYoutubeReady] = useState(false);
@@ -66,6 +68,8 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+
+    setTitle(currentLesson)
     // Load YouTube API
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";

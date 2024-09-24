@@ -8,6 +8,7 @@ import UseCase from "./bored/UseCase";
 import Quiz from "./bored/Quiz";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DialogState, ExplorationOptionType } from "@/lib/types";
+import { useTitleStore } from "@/lib/store";
 
 const renderContent = (
   selectedOption: ExplorationOptionType,
@@ -57,7 +58,6 @@ interface BoredProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isStreaming: boolean;
-  currentLesson: string;
   isPlaying: boolean;
 }
 
@@ -66,7 +66,6 @@ const Bored: React.FC<BoredProps> = ({
   isOpen,
   setIsOpen,
   isStreaming,
-  currentLesson,
   isPlaying,
 }) => {
   const [boredTime, setBoredTime] = useState(0);
@@ -74,11 +73,13 @@ const Bored: React.FC<BoredProps> = ({
   const [dialogState, setDialogState] = useState<DialogState>("initial");
   const [exploreOpt, setExploreOpt] = useState<ExplorationOptionType>("");
   const [lastScore, setLastScore] = useState(0);
+  const { title } = useTitleStore();
 
   useEffect(() => {
     const interval = setInterval(() => {
       const isBored = () => {
-        if (isOpen || sortedEmotion.length === 0 || !isStreaming || !isPlaying) return false;
+        if (isOpen || sortedEmotion.length === 0 || !isStreaming || !isPlaying)
+          return false;
         for (let i = 0; i < sortedEmotion.length; i++) {
           if (sortedEmotion[i].score < 0.4) return false;
           if (
@@ -140,7 +141,7 @@ const Bored: React.FC<BoredProps> = ({
     <Dialog open={isOpen}>
       {dialogState === "initial" && (
         <InitialDialog
-          currentLesson={currentLesson}
+          currentLesson={title}
           handleClose={handleClose}
           setDialogState={setDialogState}
         />
@@ -156,7 +157,7 @@ const Bored: React.FC<BoredProps> = ({
                 setIsOpen,
                 setBoredTime,
                 setExploreOpt,
-                currentLesson
+                title
               )}
             </DialogContent>
           )}

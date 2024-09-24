@@ -9,6 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTitleStore } from "@/lib/store";
+import { title } from "process";
 
 interface TeleprompterProps {
   content: string;
@@ -28,6 +30,38 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
   const [progress, setProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastTitleRef = useRef<string | null>(null);
+
+  const { setTitle } = useTitleStore();
+
+  const contentLines = content.split("\n");
+
+  const logCurrentLine = (lineIndex: number) => {
+    let currentTitle = lastTitleRef.current;
+    let titleFound = false;
+
+    for (let i = lineIndex; i >= 0; i--) {
+      const currentContent = contentLines[i];
+      const match = currentContent.match(/^\d+\.\s+\*\*(.*?)\*\*/);
+
+      if (match) {
+        currentTitle = match[1];
+        console.log("title", currentTitle);
+        setTitle(currentTitle);
+        titleFound = true;
+        break;
+      }
+    }
+
+    if (currentTitle && !titleFound) {
+      console.log(`${currentTitle}:`);
+      setTitle(currentTitle);
+    }
+
+    if (titleFound) {
+      lastTitleRef.current = currentTitle;
+    }
+  };
 
   useEffect(() => {
     let startTime: number;
@@ -50,6 +84,10 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
         contentRef.current.style.transform = `translateY(-${yPosition}px)`;
         setCurrentPosition(yPosition);
         setProgress((yPosition / totalScrollDistance) * 100);
+
+        const lineHeight = contentHeight / contentLines.length;
+        const currentLineIndex = Math.floor(yPosition / lineHeight);
+        logCurrentLine(currentLineIndex);
 
         if (yPosition < totalScrollDistance) {
           animationFrame = requestAnimationFrame(animate);
@@ -103,6 +141,11 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
       setCurrentPosition(newPosition);
       contentRef.current.style.transform = `translateY(-${newPosition}px)`;
       setProgress(newProgress[0]);
+
+      const lineHeight = contentHeight / contentLines.length;
+      const currentLineIndex = Math.floor(newPosition / lineHeight);
+
+      logCurrentLine(currentLineIndex);
     }
   };
 

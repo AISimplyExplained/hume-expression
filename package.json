@@ -37,7 +37,8 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "websocket": "^1.0.35"
+    "websocket": "^1.0.35",
+    "zustand": "5.0.0-rc.2"
   },
   "devDependencies": {
     "@types/node": "^20",

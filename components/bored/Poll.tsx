@@ -119,7 +119,7 @@ const Poll: React.FC<PollProps> = ({
                 <Button
                   key={index}
                   onClick={() => handleAnswer(index)}
-                  className="w-full justify-start text-left text-lg "
+                  className="w-full justify-start text-left text-base text-wrap"
                   variant="outline"
                 >
                   {option}

@@ -20,6 +20,7 @@ import { Emotion, EmotionMap } from "@/lib/data/emotion";
 import Bored from "@/components/Bored";
 import { lessonContent } from "./lessonContent";
 import RenderChapterContent from "@/components/RenderChapterContent";
+import { useTitleStore } from "@/lib/store";
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -99,6 +100,8 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
+
+  const { setTitle } = useTitleStore();
 
   const navigationItems = useMemo(
     () => [
@@ -309,6 +312,7 @@ export default function LecturePage() {
       const selectedChapter = curriculum[moduleIndex].chapters[chapterIndex];
       setCurrentChapter(selectedChapter);
       setCurrentLesson(curriculum[moduleIndex].title);
+      setTitle(curriculum[moduleIndex].title);
     },
     [curriculum]
   );
@@ -740,7 +744,6 @@ export default function LecturePage() {
         <ExpressionGraph sortedEmotion={sortedEmotions} />
         <Bored
           isPlaying={isPlaying}
-          currentLesson={currentLesson}
           isStreaming={isStreaming}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
