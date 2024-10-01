@@ -194,14 +194,14 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
   }, [sortedEmotion]);
 
   return (
-    <Card className="font-sans w-full h-full mx-auto my-2 bg-white">
+    <Card className="font-sans w-full h-full border-none">
       {/* <CardHeader>
         <CardTitle className="text-xl sm:text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
       </CardHeader> */}
-      <CardContent className="w-full h-full">
-        <ResponsiveContainer width="100%" height="95%">
+      {/* <CardContent className="w-full h-full"> */}
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} 
-              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              margin={{ top: 20, right: 20, bottom: 10, left: 35 }}>
             <CartesianGrid strokeDasharray="5 5" horizontal={true} vertical={false} />
               <XAxis
                 dataKey="date"
@@ -229,7 +229,7 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
               />
             </LineChart>
         </ResponsiveContainer>
-      </CardContent>
+      {/* </CardContent> */}
     </Card>
   );
 

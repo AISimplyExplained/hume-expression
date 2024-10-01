@@ -648,9 +648,9 @@ export default function LecturePage() {
                           </DialogDescription>
                         </DialogHeader>
                         <ExpressionGraph sortedEmotion={sortedEmotions} />
-                        <DialogFooter className="sm:justify-start">
+                        <DialogFooter className="justify-end mr-5">
                           <DialogClose asChild>
-                            <Button type="button" variant="secondary" onClick={() => setShowEngagement(false)}>
+                            <Button type="button" variant="secondary" className="shadow-md" onClick={() => setShowEngagement(false)}>
                               Close
                             </Button>
                           </DialogClose>
