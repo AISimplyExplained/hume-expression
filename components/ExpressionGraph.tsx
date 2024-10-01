@@ -148,7 +148,7 @@ const insertData = async ({ date, emotion, score }: { date: string, emotion: str
 }
 
 export default function ExpressionGraph({ sortedEmotion }: Props) {
-  const [data, setData] = useState<Point[]>([{time: '12:25:42 AM', emotion: 'Concentration', score: 0.0}]);
+  const [data, setData] = useState<Point[]>([{time: '00:00:00', emotion: 'Concentration', score: 0.0}]);
   useEffect(() => {
     const interval = setInterval(() => {
       setData(prevData => {

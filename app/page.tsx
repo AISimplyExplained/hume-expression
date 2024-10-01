@@ -23,6 +23,7 @@ import RenderChapterContent from "@/components/RenderChapterContent";
 import { useTitleStore } from "@/lib/store";
 import WebcamAlertDialog from "@/components/WebCamAlert";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { TimedFeedbackDialog } from "@/components/TimesFeedBack";
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -789,6 +790,7 @@ export default function LecturePage() {
           sortedEmotion={sortedEmotions}
         />
         <WebcamAlertDialog showAlertDialog={showWebCamAlert} setShowWebCamAlert={setShowWebCamAlert} startWebCam={startVideoStream} />
+        <TimedFeedbackDialog />
       </div>
     </ErrorBoundary>
   );
