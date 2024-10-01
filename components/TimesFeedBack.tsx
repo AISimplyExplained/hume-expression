@@ -16,7 +16,7 @@ type FeedbackOption =
   | "Show me more examples."
   | "Can we simplify that a bit?";
 
-const Interval = 180;
+const Interval = 60;
 
 export const TimedFeedbackDialog: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
