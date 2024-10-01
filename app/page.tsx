@@ -21,6 +21,7 @@ import Bored from "@/components/Bored";
 import { lessonContent } from "./lessonContent";
 import RenderChapterContent from "@/components/RenderChapterContent";
 import { useTitleStore } from "@/lib/store";
+import WebcamAlertDialog from "@/components/WebCamAlert";
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -332,6 +333,8 @@ export default function LecturePage() {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showWebCamAlert, setShowWebCamAlert] = useState(false)
+  const [isWebCamOn, setIsWebCamOn] = useState(false)
 
   useEffect(() => {
     console.log("Mounting component");
@@ -344,11 +347,21 @@ export default function LecturePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if(isPlaying) {
+      if(!isWebCamOn) {
+        setIsPlaying(false)
+        setShowWebCamAlert(true)
+      }
+    }
+  }, [isPlaying, isWebCamOn, showWebCamAlert])
+
+
   const connect = async () => {
     const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
 
     serverReadyRef.current = true;
-    console.log(`Connecting to websocket... )`);
+    console.log(`Connecting to websocket... `);
 
     setSocketStatus("Connecting...");
 
@@ -459,6 +472,8 @@ export default function LecturePage() {
       videoRef.current.srcObject = null;
     }
     setIsStreaming(false);
+    setIsPlaying(false)
+    setIsWebCamOn(false)
     if (sendVideoFramesIntervalRef.current) {
       clearInterval(sendVideoFramesIntervalRef.current);
     }
@@ -474,7 +489,9 @@ export default function LecturePage() {
       console.log("Camera access successful, setting up video stream...");
       streamRef.current = stream;
       setMediaStream(stream);
+      setShowWebCamAlert(false)
       setIsStreaming(true);
+      setIsWebCamOn(true)
       console.log("isStreaming set to true");
     } catch (error) {
       console.error("Error accessing camera:", error);
@@ -749,6 +766,7 @@ export default function LecturePage() {
           setIsOpen={setIsOpen}
           sortedEmotion={sortedEmotions}
         />
+        <WebcamAlertDialog showAlertDialog={showWebCamAlert} setShowWebCamAlert={setShowWebCamAlert} startWebCam={startVideoStream} />
       </div>
     </ErrorBoundary>
   );
