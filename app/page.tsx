@@ -643,11 +643,11 @@ export default function LecturePage() {
                       <DialogTrigger className="bg-black rounded-md p-2"><ChartSpline onClick={() => setShowEngagement(true)} color="white" /></DialogTrigger>
                       <DialogContent className="w-full md:w-3/5 h-3/4">
                         <DialogHeader>
-                          <DialogDescription>
-                              <p>Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace.</p>
-                            <ExpressionGraph sortedEmotion={sortedEmotions} />
+                          <DialogDescription >
+                              <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
                           </DialogDescription>
                         </DialogHeader>
+                        <ExpressionGraph sortedEmotion={sortedEmotions} />
                         <DialogFooter className="sm:justify-start">
                           <DialogClose asChild>
                             <Button type="button" variant="secondary" onClick={() => setShowEngagement(false)}>

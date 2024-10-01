@@ -199,7 +199,7 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
         <CardTitle className="text-xl sm:text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
       </CardHeader> */}
       <CardContent className="w-full h-full">
-        <ResponsiveContainer width="100%" height="90%">
+        <ResponsiveContainer width="100%" height="95%">
           <LineChart data={data} 
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid strokeDasharray="5 5" horizontal={true} vertical={false} />
