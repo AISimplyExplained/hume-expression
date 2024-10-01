@@ -84,7 +84,7 @@ export default function LecturePage() {
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(
     new Set()
   );
-  const [showEngagement, setShowEngagement] = useState(false);
+  const [showEngagement, setShowEngagement] = useState<boolean>(false);
   const [progress, setProgress] = useState(0);
   const [courseCompletion, setCourseCompletion] = useState({
     videosWatched: 0,
@@ -106,6 +106,7 @@ export default function LecturePage() {
   );
 
   const { setTitle } = useTitleStore();
+  console.log(completedChapters)
 
   const navigationItems = useMemo(
     () => [
@@ -565,6 +566,10 @@ export default function LecturePage() {
       .sort(([, a], [, b]) => b - a)
       .map(([emotion, score]) => ({ emotion, score }));
   }, [emotionMap]);
+  
+  const handleEngagementDialog = (isOpen: boolean) => {
+    setShowEngagement(isOpen)
+  }
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -639,10 +644,13 @@ export default function LecturePage() {
                     Engagement
                   </h2>
                   <div className="flex gap-2">
-                    <Dialog open={showEngagement}>
+                    <Dialog open={showEngagement} onOpenChange={handleEngagementDialog}>
                       <DialogTrigger className="bg-black rounded-md p-2"><ChartSpline onClick={() => setShowEngagement(true)} color="white" /></DialogTrigger>
                       <DialogContent className="w-full md:w-3/5 h-3/4">
                         <DialogHeader>
+                          <DialogTitle  className="hidden">
+                            Engagement Analysis
+                          </DialogTitle>
                           <DialogDescription >
                               <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
                           </DialogDescription>
