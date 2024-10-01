@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
-import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower } from "lucide-react";
+import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline } from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
@@ -22,6 +22,7 @@ import { lessonContent } from "./lessonContent";
 import RenderChapterContent from "@/components/RenderChapterContent";
 import { useTitleStore } from "@/lib/store";
 import WebcamAlertDialog from "@/components/WebCamAlert";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -82,6 +83,7 @@ export default function LecturePage() {
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(
     new Set()
   );
+  const [showEngagement, setShowEngagement] = useState(false);
   const [progress, setProgress] = useState(0);
   const [courseCompletion, setCourseCompletion] = useState({
     videosWatched: 0,
@@ -320,6 +322,7 @@ export default function LecturePage() {
 
   const handleChapterComplete = useCallback((chapterId: string) => {
     setCompletedChapters((prev) => new Set(prev).add(chapterId));
+    setShowEngagement(true)
   }, []);
 
   const socketRef = useRef<WebSocket | null>(null);
@@ -330,7 +333,6 @@ export default function LecturePage() {
   const [emotionMap, setEmotionMap] = useState<EmotionMap | null>(null);
   const [warning, setWarning] = useState<string>("");
   const isStreamingRef = useRef<Boolean | null>(false);
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showWebCamAlert, setShowWebCamAlert] = useState(false)
@@ -605,7 +607,7 @@ export default function LecturePage() {
           </div>
         </header>
         {renderMobileMenu}
-        <main className="flex-1 overflow-auto p-4">
+        <main className="flex-1 p-4">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div
@@ -635,24 +637,44 @@ export default function LecturePage() {
                   <h2 className="text-xl font-bold dark:text-white">
                     Engagement
                   </h2>
-                  <Button
-                    className={`${
-                      isSocketConnected
-                        ? "bg-green-500 hover:bg-green-500"
-                        : "bg-red-400 hover:bg-red-300"
-                    }`}
-                    size={"icon"}
-                    disabled={
-                      socketStatus === "Connecting..." || isSocketConnected
-                    }
-                    onClick={() => {
-                      if (!isSocketConnected) {
-                        connect();
+                  <div className="flex gap-2">
+                    <Dialog open={showEngagement}>
+                      <DialogTrigger className="bg-black rounded-md p-2"><ChartSpline onClick={() => setShowEngagement(true)} color="white" /></DialogTrigger>
+                      <DialogContent className="w-full md:w-3/5 h-3/4">
+                        <DialogHeader>
+                          <DialogDescription>
+                              <p>Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace.</p>
+                            <ExpressionGraph sortedEmotion={sortedEmotions} />
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="sm:justify-start">
+                          <DialogClose asChild>
+                            <Button type="button" variant="secondary" onClick={() => setShowEngagement(false)}>
+                              Close
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    <Button
+                      className={`${
+                        isSocketConnected
+                          ? "bg-green-500 hover:bg-green-500"
+                          : "bg-red-400 hover:bg-red-300"
+                      }`}
+                      size={"icon"}
+                      disabled={
+                        socketStatus === "Connecting..." || isSocketConnected
                       }
-                    }}
-                  >
-                    <RadioTower />
-                  </Button>
+                      onClick={() => {
+                        if (!isSocketConnected) {
+                          connect();
+                        }
+                      }}
+                    >
+                      <RadioTower />
+                    </Button>
+                  </div>
                 </div>
                 <div className="relative w-full aspect-video mb-4">
                   {isStreaming ? (
@@ -757,7 +779,7 @@ export default function LecturePage() {
             </div>
           </div>
         </main>
-        <EmotionSpiderChart sortedEmotions={sortedEmotions} />
+        {/* <EmotionSpiderChart sortedEmotions={sortedEmotions} /> */}
         <ExpressionGraph sortedEmotion={sortedEmotions} />
         <Bored
           isPlaying={isPlaying}

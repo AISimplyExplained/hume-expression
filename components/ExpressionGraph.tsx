@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -33,35 +34,102 @@ const colors = [
 // @ts-ignore
 const CustomizedDot = (props: any) => {
   const { cx, cy, payload } = props;
-  let size = 0
+  const scaleFactor = Math.min(window.innerWidth / 1920, 1);
 
-  if (payload.score <= 0.25) {
-    size = 15
+  let size = 0;
+
+  if (payload.score <= 0.1) {
+    size = 5;
+  } else if (payload.score <= 0.2) {
+    size = 15;
+  } else if (payload.score <= 0.3) {
+    size = 25;
+  } else if (payload.score <= 0.4) {
+    size = 35;
   } else if (payload.score <= 0.5) {
-    size = 30
-  } else if (payload.score <= 0.75) {
-    size = 45
+    size = 40;
+  } else if (payload.score <= 0.6) {
+    size = 45;
+  } else if (payload.score <= 0.7) {
+    size = 50;
+  } else if (payload.score <= 0.8) {
+    size = 55;
+  } else if (payload.score <= 0.9) {
+    size = 60;
   } else {
-    size = 55
+    size = 65;
   }
 
-  let color = "hsl(210, 70%, 50%)"
+  // Adjust size by scaling factor
+  size = size * scaleFactor;
+
+  let color = "hsl(210, 70%, 50%)";
   colors.forEach((val) => {
     if (val.emotion === payload.emotion) {
-      color = val.color
+      color = val.color;
     }
-  })
+  });
 
   return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={size}
-      fill={color}
-    />
+    <g>
+      {/* Outer circle with less opacity */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={size}
+        fill={color}
+        fillOpacity={0.5}
+      />
+      {/* Inner circle with full opacity */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={6 * scaleFactor} // Inner circle scaled accordingly
+        fill={color}
+        stroke="white"
+        strokeWidth={1 * scaleFactor} // Adjust stroke width as well
+      />
+    </g>
+  );
+};
+const CustomYAxisTick = (props: any) => {
+  const { x, y, payload } = props;
+  const emotion = payload.value;
+  const color = colors.find(c => c.emotion === emotion)?.color || "#000";
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={-20} y={4} dy={0} textAnchor="end" className='text-xs lg:text-sm'>
+        {emotion}
+      </text>
+      <circle cx={-10} cy={0} r={6} className='scale-50 lg:scale-100' fill={color} />
+    </g>
   );
 };
 
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const emotionColor = colors.find(c => c.emotion === data.emotion)?.color || "#000";
+    
+    return (
+      <div className="relative bg-white p-2 sm:p-3 border border-gray-200 rounded-md shadow-md text-xs sm:text-sm md:text-base">
+        <p className="font-bold text-sm sm:text-base md:text-lg" style={{ color: emotionColor }}>
+          {`${data.emotion} intensity: ${(data.score * 100).toFixed(0)}%`}
+        </p>
+
+        {/* Triangle pointer */}
+        <div className="absolute w-0 h-0 left-1/2 -translate-x-1/2 bottom-[-8px] sm:bottom-[-10px] 
+          border-l-[8px] border-r-[8px] border-t-[8px] 
+          sm:border-l-[10px] sm:border-r-[10px] sm:border-t-[10px] 
+          border-t-white border-l-transparent border-r-transparent">
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 const insertData = async ({ date, emotion, score }: { date: string, emotion: string, score: number }) => {
   const { data, error } = await supabase
@@ -80,10 +148,9 @@ const insertData = async ({ date, emotion, score }: { date: string, emotion: str
 }
 
 export default function ExpressionGraph({ sortedEmotion }: Props) {
-  const [data, setData] = useState<Point[]>([]);
-
+  const [data, setData] = useState<Point[]>([{time: '12:25:42 AM', emotion: 'Concentration', score: 0.0}]);
   useEffect(() => {
-    // const interval = setInterval(() => {
+    const interval = setInterval(() => {
       setData(prevData => {
         if (sortedEmotion.length === 0) {
           return prevData;
@@ -117,64 +184,53 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
         if (!selectedEmotion) {
           return prevData;
         }
-
-        // const newData = [...prevData, selectedEmotion];
-        // return newData.slice(-8);
-        return []
+        console.log(selectedEmotion)
+        const newData = [...prevData, selectedEmotion];
+        return newData.slice(-8);
       });
-    // }, 1000);
+    }, 1000);
 
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, [sortedEmotion]);
 
   return (
-    <></>
-    // <Card className="w-full h-full max-w-6xl m-2 bg-gradient-to-br from-blue-50 to-purple-50">
-    //   <CardHeader>
-    //     <CardTitle className="text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
-    //   </CardHeader>
-    //   <CardContent className="w-full h-[700px] max-w-6xl m-2 ">
-    //     <ResponsiveContainer width="97%" height="97%">
-    //       <LineChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 80 }}>
-    //         <CartesianGrid strokeDasharray="3 3" />
-    //         <XAxis
-    //           dataKey="time"
-    //           type="category"
-    //           interval="preserveStartEnd"
-    //           className=''
-    //           padding={{ left: 60, right: 60 }}
-    //         />
-    //         <YAxis
-    //           type="category"
-    //           dataKey="emotion"
-    //           domain={emotions}
-    //           ticks={emotions}
-    //           padding={{ top: 60, bottom: 60 }}
-    //         />
-    //         <Tooltip content={({ active, payload }) => {
-    //           if (active && payload && payload.length) {
-    //             return (
-    //               <div className="custom-tooltip bg-white p-2 border border-gray-300">
-    //                 <p>{`Time: ${payload[0].payload.time}`}</p>
-    //                 <p>{`Emotion: ${payload[0].payload.emotion}`}</p>
-    //                 <p>{`Score: ${payload[0].payload.score.toFixed(2)}`}</p>
-    //               </div>
-    //             );
-    //           }
-    //           return null;
-    //         }} />
-    //         <Line
-    //           type="monotone"
-    //           dataKey="emotion"
-    //           stroke="hsl(210, 70%, 50%)"
-    //           strokeWidth={2}
-    //           dot={<CustomizedDot />}
-    //           isAnimationActive={false}
-    //         />
-    //       </LineChart>
-    //     </ResponsiveContainer>
-    //   </CardContent>
-    // </Card>
+    <Card className="font-sans w-full h-full mx-auto my-2 bg-white">
+      {/* <CardHeader>
+        <CardTitle className="text-xl sm:text-2xl font-bold text-center text-gray-800">Emotion Flow Visualization</CardTitle>
+      </CardHeader> */}
+      <CardContent className="w-full h-full">
+        <ResponsiveContainer width="100%" height="90%">
+          <LineChart data={data} 
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid strokeDasharray="5 5" horizontal={true} vertical={false} />
+              <XAxis
+                dataKey="date"
+                type="category"
+                interval="preserveStartEnd"
+                className='text-xs lg:text-sm'
+                padding={{ left: 60, right: 60 }}
+              />
+              <YAxis
+                type="category"
+                dataKey="emotion"
+                domain={emotions}
+                stroke="#888888"
+                tick={<CustomYAxisTick />}
+                width={100}
+              />
+              <Tooltip offset={-114} content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="emotion"
+                stroke="hsl(210, 60%, 50%)"
+                strokeWidth={2}
+                dot={<CustomizedDot />}
+                isAnimationActive={false}
+              />
+            </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 
 }
