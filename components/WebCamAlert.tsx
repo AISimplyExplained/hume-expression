@@ -25,6 +25,7 @@ const WebcamAlertDialog = ({showAlertDialog, startWebCam, setShowWebCamAlert}: P
         </AlertDialogHeader>
         <AlertDialogFooter>
           <Button onClick={handleAlert} variant={"outline"}>Cancel</Button>
+          <Button>Learn More</Button>
           <AlertDialogAction onClick={startWebCam}>
             <Camera className="mr-2 h-4 w-4" />
             Start Webcam
