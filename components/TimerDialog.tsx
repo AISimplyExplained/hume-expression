@@ -121,8 +121,8 @@ const TimerDialog: React.FC<Props> = ({ isPlaying }) => {
             <DialogHeader>
               <DialogTitle>Take a Break?</DialogTitle>
               <DialogDescription>
-                We noticed you've been on this section for a while. Need a break
-                or a quick refresher?
+                We noticed you&#39;ve been on this section for a while. Need a
+                break or a quick refresher?
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="">
@@ -130,14 +130,14 @@ const TimerDialog: React.FC<Props> = ({ isPlaying }) => {
                 onClick={() => handleClose("recap", content)}
                 disabled={isLoading}
               >
-                Yes, let's recap!
+                Yes, let&#39;s recap!
               </Button>
               <Button
                 variant="outline"
                 onClick={() => handleClose("continue", content)}
                 disabled={isLoading}
               >
-                I'm ready to continue.
+                I&#39;m ready to continue.
               </Button>
             </DialogFooter>
           </>
