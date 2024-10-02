@@ -22,8 +22,19 @@ import { lessonContent } from "./lessonContent";
 import RenderChapterContent from "@/components/RenderChapterContent";
 import { useTitleStore } from "@/lib/store";
 import WebcamAlertDialog from "@/components/WebCamAlert";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { TimedFeedbackDialog } from "@/components/TimesFeedBack";
+import TimerDialog from "@/components/TimerDialog";
+import ConfidenceAssessment from "@/components/ConfidenceAssessment";
 import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
 
@@ -345,8 +356,8 @@ export default function LecturePage() {
   const isStreamingRef = useRef<Boolean | null>(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [showWebCamAlert, setShowWebCamAlert] = useState(false)
-  const [isWebCamOn, setIsWebCamOn] = useState(false)
+  const [showWebCamAlert, setShowWebCamAlert] = useState(false);
+  const [isWebCamOn, setIsWebCamOn] = useState(false);
 
   useEffect(() => {
     console.log("Mounting component");
@@ -360,14 +371,13 @@ export default function LecturePage() {
   }, []);
 
   useEffect(() => {
-    if(isPlaying) {
-      if(!isWebCamOn) {
-        setIsPlaying(false)
-        setShowWebCamAlert(true)
+    if (isPlaying) {
+      if (!isWebCamOn) {
+        setIsPlaying(false);
+        setShowWebCamAlert(true);
       }
     }
-  }, [isPlaying, isWebCamOn, showWebCamAlert])
-
+  }, [isPlaying, isWebCamOn, showWebCamAlert]);
 
   const connect = async () => {
     const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
@@ -484,8 +494,8 @@ export default function LecturePage() {
       videoRef.current.srcObject = null;
     }
     setIsStreaming(false);
-    setIsPlaying(false)
-    setIsWebCamOn(false)
+    setIsPlaying(false);
+    setIsWebCamOn(false);
     if (sendVideoFramesIntervalRef.current) {
       clearInterval(sendVideoFramesIntervalRef.current);
     }
@@ -501,9 +511,9 @@ export default function LecturePage() {
       console.log("Camera access successful, setting up video stream...");
       streamRef.current = stream;
       setMediaStream(stream);
-      setShowWebCamAlert(false)
+      setShowWebCamAlert(false);
       setIsStreaming(true);
-      setIsWebCamOn(true)
+      setIsWebCamOn(true);
       console.log("isStreaming set to true");
     } catch (error) {
       console.error("Error accessing camera:", error);
@@ -725,19 +735,35 @@ export default function LecturePage() {
                   </h2>
                   <div className="flex gap-2">
                     <Dialog open={showEngagement} onOpenChange={handleEngagementDialog}>
-                      <DialogTrigger className="bg-black rounded-md p-2"><ChartSpline onClick={() => setShowEngagement(true)} color="white" /></DialogTrigger>
+                      <DialogTrigger className="bg-black rounded-md p-2">
+                        <ChartSpline
+                          onClick={() => setShowEngagement(true)}
+                          color="white"
+                        />
+                      </DialogTrigger>
                       <DialogContent className="w-full md:w-3/5 h-3/4">
-                        <DialogHeader className="flex flex-row justify-between items-center">
-                          <DialogTitle className="text-lg">
-                            Engagement Dashboard
-                          </DialogTitle>
-                          <XIcon className="cursor-pointer size-8 rounded-md hover:bg-gray-200" onClick={() => setShowEngagement(false)}/>
+                        <DialogHeader>
+                          <DialogDescription>
+                            <p>
+                              Your learning journey was dynamic! Here's how your
+                              focus levels shifted throughout the course. Based
+                              on this data, we've adjusted future content to
+                              match your preferred learning pace.
+                            </p>
+                            <ExpressionGraph engagementHistory={sortedEmotions} />
+                          </DialogDescription>
                         </DialogHeader>
-                        <hr/>
-                        <DialogDescription >
-                            <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
-                        </DialogDescription>
-                        <ExpressionGraph emotionMap={emotionMap} engagementHistory={engagementHistory} setEngagementHistory={setEngagementHistory} />
+                        <DialogFooter className="sm:justify-start">
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={() => setShowEngagement(false)}
+                            >
+                              Close
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
                       </DialogContent>
                     </Dialog>
                     <Button
@@ -872,7 +898,11 @@ export default function LecturePage() {
           setIsOpen={setIsOpen}
           sortedEmotion={sortedEmotions}
         />
-        <WebcamAlertDialog showAlertDialog={showWebCamAlert} setShowWebCamAlert={setShowWebCamAlert} startWebCam={startVideoStream} />
+        <WebcamAlertDialog
+          showAlertDialog={showWebCamAlert}
+          setShowWebCamAlert={setShowWebCamAlert}
+          startWebCam={startVideoStream}
+        />
         <TimedFeedbackDialog />
         <AchievementAlertDialog
           open={showAchievement}
@@ -880,6 +910,8 @@ export default function LecturePage() {
           title="Achievement Unlocked!"
           description={`You've unlocked the '${currentLesson} Prodigy' badge for mastering ${currentLesson}. Keep going to unlock more achievements!`}
         />
+        <TimerDialog isPlaying={isPlaying} />
+        <ConfidenceAssessment />
       </div>
     </ErrorBoundary>
   );

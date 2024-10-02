@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTitleStore } from "@/lib/store";
+import { useChapterEnded, useTitleStore } from "@/lib/store";
 import { title } from "process";
 
 interface TeleprompterProps {
@@ -33,6 +33,9 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
   const lastTitleRef = useRef<string | null>(null);
 
   const { setTitle } = useTitleStore();
+  const {changeChapterFinished} = useChapterEnded()
+
+  
 
   const contentLines = content.split("\n");
 
@@ -91,7 +94,9 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
 
         if (yPosition < totalScrollDistance) {
           animationFrame = requestAnimationFrame(animate);
+          changeChapterFinished(false)
         } else {
+          changeChapterFinished(true)
           setIsPlaying(false);
         }
       }
