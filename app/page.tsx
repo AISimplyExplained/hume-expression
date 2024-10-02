@@ -904,9 +904,10 @@ export default function LecturePage() {
 
               {/*Badges */}
               <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                  <h2 className="text-xl w-full font-bold dark:text-white">
+                  <h2 className="text-xl w-full font-bold dark:text-white my-3">
                     Badges
                   </h2>
+                  <hr />
                   <div className="flex items-center justify-center pt-6">
                     <EnergyBadge energy={500}/>
                   </div>
