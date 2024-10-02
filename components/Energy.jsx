@@ -4,12 +4,14 @@ import { Zap } from 'lucide-react';
 export const EnergyBadge = ({ energy }) => {
   return (
     <div 
-      className="relative mt-4 w-20 h-20 transform rotate-45 group"
+      className="select-none relative mt-4 w-20 h-20 transform rotate-45 group shadow-md"
       style={{
         position: 'relative',
         width: '5rem',
         height: '5rem',
-        transform: 'rotate(45deg)'
+        transform: 'rotate(45deg)',
+        borderRadius: '1.5rem',
+
       }}
     >
       <div 
@@ -67,9 +69,21 @@ export const EnergyBadge = ({ energy }) => {
   );
 };
 
-export const EnergyIcon = ({ energy = 100 }) => {
+export const EnergyIcon = ({ energy = 100, animate }) => {
   return (
     <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
+      <style jsx>{`
+        @keyframes slideUp {
+          0% {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
       <div 
         style={{
           position: 'relative',
@@ -115,6 +129,8 @@ export const EnergyIcon = ({ energy = 100 }) => {
           fontWeight: 'bold',
           color: '#eab308',
           filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))',
+          animation: animate ? 'slideUp 0.5s ease-out' : 'none',
+
         }}
       >
         {energy}

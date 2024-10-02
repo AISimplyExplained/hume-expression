@@ -10,14 +10,17 @@ interface Question {
   question: string;
   options: string[];
   correctAnswer: number;
+  
 }
 
 interface QuizProps {
   questions: Question[];
   onComplete: (score: number) => void;
+  setEnergy: React.Dispatch<React.SetStateAction<number>>;
+
 }
 
-const Quiz: React.FC<QuizProps> = ({ questions, onComplete }) => {
+const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -29,6 +32,7 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete }) => {
     setShowResult(true);
 
     if (answerIndex === questions[currentQuestion].correctAnswer) {
+      setEnergy(prev => prev+20)
       setScore(score + 1);
     }
   };

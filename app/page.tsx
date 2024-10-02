@@ -129,12 +129,21 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
+  const [energy, setEnergy] = useState<number>(0)
+  const [animateEnergy, setAnimateEnergy] = useState(false);
+
+  useEffect(() => {
+    setAnimateEnergy(true);
+    const timeout = setTimeout(() => setAnimateEnergy(false), 500);
+    return () => clearTimeout(timeout);
+  }, [energy]);
 
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
   const [engagementHistory, setEngagementHistory] = useState<Point[]>([
     { time: "00:00:00", emotion: "Concentration", score: 0.0 },
   ]);
   const { setTitle } = useTitleStore();
+  
 
   const navigationItems = useMemo(
     () => [
@@ -353,15 +362,13 @@ export default function LecturePage() {
   const handleChapterComplete = useCallback(
     (chapterId: string) => {
       setCompletedChapters((prev) => new Set(prev).add(chapterId));
-      const engagementPercentage =
-        calculateEngagementPercentage(engagementHistory);
-      console.log(engagementPercentage);
-      if (engagementPercentage > 50) setShowAchievement(true);
+      setEnergy(prev => prev+100)
+      const engagementPercentage = calculateEngagementPercentage(engagementHistory);
+      // if (engagementPercentage > 50) setShowAchievement(true);
+      setShowAchievement(true);
     },
-    [engagementHistory]
+    [engagementHistory, energy]
   );
-
-  console.log(engagementHistory);
 
   const socketRef = useRef<WebSocket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -709,7 +716,7 @@ export default function LecturePage() {
 
               <div className="flex items-center space-x-2">
                 <div className="flex items-center">
-                  <EnergyIcon energy={50}/>
+                  <EnergyIcon energy={energy} animate={animateEnergy}/>
                 </div>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
@@ -744,6 +751,7 @@ export default function LecturePage() {
                   lessonContent={lessonContent}
                   setCourseCompletion={setCourseCompletion}
                   toggleFullscreen={toggleFullscreen}
+                  setEnergy={setEnergy}
                 />
               </div>
 
@@ -901,17 +909,21 @@ export default function LecturePage() {
                   />
                 </div>
               </div>
-
-              {/*Badges */}
+              {/* Badges */}
               <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                  <h2 className="text-xl w-full font-bold dark:text-white my-3">
-                    Badges
-                  </h2>
-                  <hr />
-                  <div className="flex items-center justify-center pt-6">
-                    <EnergyBadge energy={500}/>
-                  </div>
+                <h2 className="text-xl w-full font-bold dark:text-white my-3">Badges</h2>
+                <hr />
+                <div className="flex flex-col items-center justify-center pt-6">
+                  {completedChapters && completedChapters.size > 0 ? (
+                    Array.from(completedChapters).map((_, index) => (
+                      <EnergyBadge key={index} energy={500} />
+                    ))
+                  ) : (
+                    <p className="text-gray-600 dark:text-gray-300">Finish chapter to earn badges</p>
+                  )}
+                </div>
               </div>
+
             </div>
             <div className="mt-4">
               <Curriculum
@@ -947,8 +959,6 @@ export default function LecturePage() {
         <TimerDialog isPlaying={isPlaying} />
         <ConfidenceAssessment />
       </div>
-      <EnergyBadge energy={687} />
-
     </ErrorBoundary>
   );
 }
