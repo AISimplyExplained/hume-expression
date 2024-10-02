@@ -12,7 +12,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
-import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline, XIcon, Zap } from "lucide-react";
+import {
+  Menu,
+  X,
+  Moon,
+  Sun,
+  Webcam,
+  Pause,
+  RadioTower,
+  ChartSpline,
+  XIcon,
+  Zap,
+} from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph, { colors } from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
@@ -117,11 +128,12 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
-  
+
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
-  const [engagementHistory, setEngagementHistory] = useState<Point[]>([{time: '00:00:00', emotion: 'Concentration', score: 0.0}]);
+  const [engagementHistory, setEngagementHistory] = useState<Point[]>([
+    { time: "00:00:00", emotion: "Concentration", score: 0.0 },
+  ]);
   const { setTitle } = useTitleStore();
-  
 
   const navigationItems = useMemo(
     () => [
@@ -337,14 +349,18 @@ export default function LecturePage() {
     [curriculum]
   );
 
-  const handleChapterComplete = useCallback((chapterId: string) => {
-    setCompletedChapters((prev) => new Set(prev).add(chapterId));
-    const engagementPercentage = calculateEngagementPercentage(engagementHistory);
-    console.log(engagementPercentage);
-    if(engagementPercentage > 50) setShowAchievement(true)
-  }, [engagementHistory]);
+  const handleChapterComplete = useCallback(
+    (chapterId: string) => {
+      setCompletedChapters((prev) => new Set(prev).add(chapterId));
+      const engagementPercentage =
+        calculateEngagementPercentage(engagementHistory);
+      console.log(engagementPercentage);
+      if (engagementPercentage > 50) setShowAchievement(true);
+    },
+    [engagementHistory]
+  );
 
-  console.log(engagementHistory)
+  console.log(engagementHistory);
 
   const socketRef = useRef<WebSocket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -584,17 +600,17 @@ export default function LecturePage() {
       .sort(([, a], [, b]) => b - a)
       .map(([emotion, score]) => ({ emotion, score }));
   }, [emotionMap]);
-  
+
   const handleEngagementDialog = (isOpen: boolean) => {
-    setShowEngagement(isOpen)
-  }
+    setShowEngagement(isOpen);
+  };
 
   useEffect(() => {
-    setEngagementHistory(prevData => {
+    setEngagementHistory((prevData) => {
       if (!emotionMap) {
         return prevData;
       }
-  
+
       let maxEmotion = null;
       let maxScore = -Infinity;
 
@@ -605,18 +621,18 @@ export default function LecturePage() {
           maxEmotion = emotion;
         }
       });
-  
+
       if (!maxEmotion) {
         return prevData;
       }
-  
+
       const date = new Date().toLocaleTimeString();
       const selectedEmotion: Point = {
         time: date,
         emotion: maxEmotion as EmotionName,
-        score: maxScore
+        score: maxScore,
       };
-  
+
       // insertData({
       //   date: date,
       //   emotion: selectedEmotion.emotion,
@@ -624,26 +640,36 @@ export default function LecturePage() {
       // })
       //   .then(() => console.log('Data inserted successfully!'))
       //   .catch(err => console.error('Error inserting data:', err));
-  
+
       const newData = [...prevData, selectedEmotion];
       return newData; // Keep only the last 8 records
     });
   }, [emotionMap]);
-  
-  const calculateEngagementPercentage = (engagementHistory: Point[]): number => {
-    const stronglyEngagedEmotions = ["Concentration", "Interest", "Joy", "Doubt", "Calmness", "Confusion"];
-    const totalScore = engagementHistory.reduce((acc, entry) => acc + entry.score, 0);
+
+  const calculateEngagementPercentage = (
+    engagementHistory: Point[]
+  ): number => {
+    const stronglyEngagedEmotions = [
+      "Concentration",
+      "Interest",
+      "Joy",
+      "Doubt",
+      "Calmness",
+      "Confusion",
+    ];
+    const totalScore = engagementHistory.reduce(
+      (acc, entry) => acc + entry.score,
+      0
+    );
 
     if (totalScore === 0) return 0;
 
     const stronglyEngagedScore = engagementHistory
-      .filter(entry => stronglyEngagedEmotions.includes(entry.emotion))
+      .filter((entry) => stronglyEngagedEmotions.includes(entry.emotion))
       .reduce((acc, entry) => acc + entry.score, 0);
 
     return (stronglyEngagedScore / totalScore) * 100;
   };
-
-  
 
   const engagementPercentage = calculateEngagementPercentage(engagementHistory);
   console.log(engagementPercentage.toFixed(2));
@@ -689,7 +715,9 @@ export default function LecturePage() {
                     </div>
                     <div className="absolute inset-0 bg-black opacity-10 rounded-full"></div>
                   </div>
-                  <span className="ml-2 text-xl font-bold text-yellow-500 drop-shadow-sm">{100}</span>
+                  <span className="ml-2 text-xl font-bold text-yellow-500 drop-shadow-sm">
+                    {100}
+                  </span>
                 </div>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
@@ -734,7 +762,10 @@ export default function LecturePage() {
                     Engagement
                   </h2>
                   <div className="flex gap-2">
-                    <Dialog open={showEngagement} onOpenChange={handleEngagementDialog}>
+                    <Dialog
+                      open={showEngagement}
+                      onOpenChange={handleEngagementDialog}
+                    >
                       <DialogTrigger className="bg-black rounded-md p-2">
                         <ChartSpline
                           onClick={() => setShowEngagement(true)}
@@ -742,28 +773,28 @@ export default function LecturePage() {
                         />
                       </DialogTrigger>
                       <DialogContent className="w-full md:w-3/5 h-3/4">
-                        <DialogHeader>
-                          <DialogDescription>
-                            <p>
-                              Your learning journey was dynamic! Here's how your
-                              focus levels shifted throughout the course. Based
-                              on this data, we've adjusted future content to
-                              match your preferred learning pace.
-                            </p>
-                            <ExpressionGraph engagementHistory={sortedEmotions} />
-                          </DialogDescription>
+                        <DialogHeader className="flex flex-row justify-between items-center">
+                          <DialogTitle className="text-lg">
+                            Engagement Dashboard
+                          </DialogTitle>
+                          <XIcon
+                            className="cursor-pointer size-8 rounded-md hover:bg-gray-200"
+                            onClick={() => setShowEngagement(false)}
+                          />
                         </DialogHeader>
-                        <DialogFooter className="sm:justify-start">
-                          <DialogClose asChild>
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              onClick={() => setShowEngagement(false)}
-                            >
-                              Close
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter>
+                        <hr />
+                        <DialogDescription>
+                          <p>
+                            {
+                              "Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."
+                            }
+                          </p>
+                        </DialogDescription>
+                        <ExpressionGraph
+                          emotionMap={emotionMap}
+                          engagementHistory={engagementHistory}
+                          setEngagementHistory={setEngagementHistory}
+                        />
                       </DialogContent>
                     </Dialog>
                     <Button
