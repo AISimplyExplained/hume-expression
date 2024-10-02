@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
-import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline } from "lucide-react";
+import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline, XIcon } from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
@@ -647,22 +647,24 @@ export default function LecturePage() {
                     <Dialog open={showEngagement} onOpenChange={handleEngagementDialog}>
                       <DialogTrigger className="bg-black rounded-md p-2"><ChartSpline onClick={() => setShowEngagement(true)} color="white" /></DialogTrigger>
                       <DialogContent className="w-full md:w-3/5 h-3/4">
-                        <DialogHeader>
-                          <DialogTitle  className="hidden">
-                            Engagement Analysis
+                        <DialogHeader className="flex flex-row justify-between items-center">
+                          <DialogTitle className="text-lg">
+                            Engagement Dashboard
                           </DialogTitle>
-                          <DialogDescription >
-                              <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
-                          </DialogDescription>
+                          <XIcon className="cursor-pointer size-8 rounded-md hover:bg-gray-200" onClick={() => setShowEngagement(false)}/>
                         </DialogHeader>
+                        <hr/>
+                        <DialogDescription >
+                            <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
+                        </DialogDescription>
                         <ExpressionGraph sortedEmotion={sortedEmotions} />
-                        <DialogFooter className="justify-end mr-5">
+                        {/* <DialogFooter className="justify-end mr-5">
                           <DialogClose asChild>
                             <Button type="button" variant="secondary" className="shadow-md" onClick={() => setShowEngagement(false)}>
                               Close
                             </Button>
                           </DialogClose>
-                        </DialogFooter>
+                        </DialogFooter> */}
                       </DialogContent>
                     </Dialog>
                     <Button
