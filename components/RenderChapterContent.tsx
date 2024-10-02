@@ -4,7 +4,7 @@ import { Minimize, Maximize } from "lucide-react";
 import Teleprompter from "./Teleprompter";
 import Quiz from "./Quiz";
 import { Chapter } from "./Curriculum";
-import { useTitleStore } from "@/lib/store";
+import { useChapterEnded, useTitleStore } from "@/lib/store";
 
 interface CourseCompletion {
   quizzesTaken: number;
@@ -105,6 +105,14 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
       )}
     </Button>
   );
+
+  const {setContent} = useChapterEnded()
+
+  useEffect(() => {
+    if(currentChapter && currentChapter.type === "text") {
+     setContent(currentChapter.content) 
+    }
+  },[currentChapter, setContent])
 
   const Render = () => {
     if (!currentChapter) return null;

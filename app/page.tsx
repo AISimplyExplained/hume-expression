@@ -12,7 +12,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
-import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline, XIcon, Zap } from "lucide-react";
+import {
+  Menu,
+  X,
+  Moon,
+  Sun,
+  Webcam,
+  Pause,
+  RadioTower,
+  ChartSpline,
+  XIcon,
+  Zap,
+} from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph, { colors } from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
@@ -22,8 +33,19 @@ import { lessonContent } from "./lessonContent";
 import RenderChapterContent from "@/components/RenderChapterContent";
 import { useTitleStore } from "@/lib/store";
 import WebcamAlertDialog from "@/components/WebCamAlert";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { TimedFeedbackDialog } from "@/components/TimesFeedBack";
+import TimerDialog from "@/components/TimerDialog";
+import ConfidenceAssessment from "@/components/ConfidenceAssessment";
 import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
 import {EnergyIcon, EnergyBadge} from '../components/Energy'
@@ -107,11 +129,12 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
-  
+
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
-  const [engagementHistory, setEngagementHistory] = useState<Point[]>([{time: '00:00:00', emotion: 'Concentration', score: 0.0}]);
+  const [engagementHistory, setEngagementHistory] = useState<Point[]>([
+    { time: "00:00:00", emotion: "Concentration", score: 0.0 },
+  ]);
   const { setTitle } = useTitleStore();
-  
 
   const navigationItems = useMemo(
     () => [
@@ -327,14 +350,18 @@ export default function LecturePage() {
     [curriculum]
   );
 
-  const handleChapterComplete = useCallback((chapterId: string) => {
-    setCompletedChapters((prev) => new Set(prev).add(chapterId));
-    const engagementPercentage = calculateEngagementPercentage(engagementHistory);
-    console.log(engagementPercentage);
-    if(engagementPercentage > 50) setShowAchievement(true)
-  }, [engagementHistory]);
+  const handleChapterComplete = useCallback(
+    (chapterId: string) => {
+      setCompletedChapters((prev) => new Set(prev).add(chapterId));
+      const engagementPercentage =
+        calculateEngagementPercentage(engagementHistory);
+      console.log(engagementPercentage);
+      if (engagementPercentage > 50) setShowAchievement(true);
+    },
+    [engagementHistory]
+  );
 
-  console.log(engagementHistory)
+  console.log(engagementHistory);
 
   const socketRef = useRef<WebSocket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -346,8 +373,8 @@ export default function LecturePage() {
   const isStreamingRef = useRef<Boolean | null>(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [showWebCamAlert, setShowWebCamAlert] = useState(false)
-  const [isWebCamOn, setIsWebCamOn] = useState(false)
+  const [showWebCamAlert, setShowWebCamAlert] = useState(false);
+  const [isWebCamOn, setIsWebCamOn] = useState(false);
 
   useEffect(() => {
     console.log("Mounting component");
@@ -361,14 +388,13 @@ export default function LecturePage() {
   }, []);
 
   useEffect(() => {
-    if(isPlaying) {
-      if(!isWebCamOn) {
-        setIsPlaying(false)
-        setShowWebCamAlert(true)
+    if (isPlaying) {
+      if (!isWebCamOn) {
+        setIsPlaying(false);
+        setShowWebCamAlert(true);
       }
     }
-  }, [isPlaying, isWebCamOn, showWebCamAlert])
-
+  }, [isPlaying, isWebCamOn, showWebCamAlert]);
 
   const connect = async () => {
     const socketUrl = `wss://api.hume.ai/v0/stream/models?api_key=${process.env.NEXT_PUBLIC_HUME_API_KEY}`;
@@ -485,8 +511,8 @@ export default function LecturePage() {
       videoRef.current.srcObject = null;
     }
     setIsStreaming(false);
-    setIsPlaying(false)
-    setIsWebCamOn(false)
+    setIsPlaying(false);
+    setIsWebCamOn(false);
     if (sendVideoFramesIntervalRef.current) {
       clearInterval(sendVideoFramesIntervalRef.current);
     }
@@ -502,9 +528,9 @@ export default function LecturePage() {
       console.log("Camera access successful, setting up video stream...");
       streamRef.current = stream;
       setMediaStream(stream);
-      setShowWebCamAlert(false)
+      setShowWebCamAlert(false);
       setIsStreaming(true);
-      setIsWebCamOn(true)
+      setIsWebCamOn(true);
       console.log("isStreaming set to true");
     } catch (error) {
       console.error("Error accessing camera:", error);
@@ -575,17 +601,17 @@ export default function LecturePage() {
       .sort(([, a], [, b]) => b - a)
       .map(([emotion, score]) => ({ emotion, score }));
   }, [emotionMap]);
-  
+
   const handleEngagementDialog = (isOpen: boolean) => {
-    setShowEngagement(isOpen)
-  }
+    setShowEngagement(isOpen);
+  };
 
   useEffect(() => {
-    setEngagementHistory(prevData => {
+    setEngagementHistory((prevData) => {
       if (!emotionMap) {
         return prevData;
       }
-  
+
       let maxEmotion = null;
       let maxScore = -Infinity;
 
@@ -596,18 +622,18 @@ export default function LecturePage() {
           maxEmotion = emotion;
         }
       });
-  
+
       if (!maxEmotion) {
         return prevData;
       }
-  
+
       const date = new Date().toLocaleTimeString();
       const selectedEmotion: Point = {
         time: date,
         emotion: maxEmotion as EmotionName,
-        score: maxScore
+        score: maxScore,
       };
-  
+
       // insertData({
       //   date: date,
       //   emotion: selectedEmotion.emotion,
@@ -615,26 +641,36 @@ export default function LecturePage() {
       // })
       //   .then(() => console.log('Data inserted successfully!'))
       //   .catch(err => console.error('Error inserting data:', err));
-  
+
       const newData = [...prevData, selectedEmotion];
       return newData; // Keep only the last 8 records
     });
   }, [emotionMap]);
-  
-  const calculateEngagementPercentage = (engagementHistory: Point[]): number => {
-    const stronglyEngagedEmotions = ["Concentration", "Interest", "Joy", "Doubt", "Calmness", "Confusion"];
-    const totalScore = engagementHistory.reduce((acc, entry) => acc + entry.score, 0);
+
+  const calculateEngagementPercentage = (
+    engagementHistory: Point[]
+  ): number => {
+    const stronglyEngagedEmotions = [
+      "Concentration",
+      "Interest",
+      "Joy",
+      "Doubt",
+      "Calmness",
+      "Confusion",
+    ];
+    const totalScore = engagementHistory.reduce(
+      (acc, entry) => acc + entry.score,
+      0
+    );
 
     if (totalScore === 0) return 0;
 
     const stronglyEngagedScore = engagementHistory
-      .filter(entry => stronglyEngagedEmotions.includes(entry.emotion))
+      .filter((entry) => stronglyEngagedEmotions.includes(entry.emotion))
       .reduce((acc, entry) => acc + entry.score, 0);
 
     return (stronglyEngagedScore / totalScore) * 100;
   };
-
-  
 
   const engagementPercentage = calculateEngagementPercentage(engagementHistory);
   console.log(engagementPercentage.toFixed(2));
@@ -718,20 +754,39 @@ export default function LecturePage() {
                     Engagement
                   </h2>
                   <div className="flex gap-2">
-                    <Dialog open={showEngagement} onOpenChange={handleEngagementDialog}>
-                      <DialogTrigger className="bg-black rounded-md p-2"><ChartSpline onClick={() => setShowEngagement(true)} color="white" /></DialogTrigger>
+                    <Dialog
+                      open={showEngagement}
+                      onOpenChange={handleEngagementDialog}
+                    >
+                      <DialogTrigger className="bg-black rounded-md p-2">
+                        <ChartSpline
+                          onClick={() => setShowEngagement(true)}
+                          color="white"
+                        />
+                      </DialogTrigger>
                       <DialogContent className="w-full md:w-3/5 h-3/4">
                         <DialogHeader className="flex flex-row justify-between items-center">
                           <DialogTitle className="text-lg">
                             Engagement Dashboard
                           </DialogTitle>
-                          <XIcon className="cursor-pointer size-8 rounded-md hover:bg-gray-200" onClick={() => setShowEngagement(false)}/>
+                          <XIcon
+                            className="cursor-pointer size-8 rounded-md hover:bg-gray-200"
+                            onClick={() => setShowEngagement(false)}
+                          />
                         </DialogHeader>
-                        <hr/>
-                        <DialogDescription >
-                            <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
+                        <hr />
+                        <DialogDescription>
+                          <p>
+                            {
+                              "Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."
+                            }
+                          </p>
                         </DialogDescription>
-                        <ExpressionGraph emotionMap={emotionMap} engagementHistory={engagementHistory} setEngagementHistory={setEngagementHistory} />
+                        <ExpressionGraph
+                          emotionMap={emotionMap}
+                          engagementHistory={engagementHistory}
+                          setEngagementHistory={setEngagementHistory}
+                        />
                       </DialogContent>
                     </Dialog>
                     <Button
@@ -876,7 +931,11 @@ export default function LecturePage() {
           setIsOpen={setIsOpen}
           sortedEmotion={sortedEmotions}
         />
-        <WebcamAlertDialog showAlertDialog={showWebCamAlert} setShowWebCamAlert={setShowWebCamAlert} startWebCam={startVideoStream} />
+        <WebcamAlertDialog
+          showAlertDialog={showWebCamAlert}
+          setShowWebCamAlert={setShowWebCamAlert}
+          startWebCam={startVideoStream}
+        />
         <TimedFeedbackDialog />
         <AchievementAlertDialog
           open={showAchievement}
@@ -884,6 +943,8 @@ export default function LecturePage() {
           title="Achievement Unlocked!"
           description={`You've unlocked the '${currentLesson} Prodigy' badge for mastering ${currentLesson}. Keep going to unlock more achievements!`}
         />
+        <TimerDialog isPlaying={isPlaying} />
+        <ConfidenceAssessment />
       </div>
       <EnergyBadge energy={687} />
 
