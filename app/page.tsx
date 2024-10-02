@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
-import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline, XIcon } from "lucide-react";
+import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline, XIcon, Zap } from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph, { colors } from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
@@ -671,6 +671,16 @@ export default function LecturePage() {
               </div>
 
               <div className="flex items-center space-x-2">
+                <div className="flex items-center">
+                  <div className="relative w-10 h-10 flex items-center justify-center bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 rounded-full shadow-lg border-2 border-yellow-400 overflow-hidden group transition-transform duration-200 hover:scale-110">
+                    <div className="absolute inset-0 bg-yellow-200 opacity-0 group-hover:opacity-20 transition-opacity duration-200"></div>
+                    <div className="relative z-10">
+                      <Zap size={20} className="text-white drop-shadow-md" />
+                    </div>
+                    <div className="absolute inset-0 bg-black opacity-10 rounded-full"></div>
+                  </div>
+                  <span className="ml-2 text-xl font-bold text-yellow-500 drop-shadow-sm">{100}</span>
+                </div>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
                 </Avatar>
