@@ -18,7 +18,10 @@ type FeedbackOption =
 
 const Interval = 60;
 
-export const TimedFeedbackDialog: React.FC = () => {
+interface Props {
+  isWebCamOn: boolean
+}
+export const TimedFeedbackDialog: React.FC<Props> = ({isWebCamOn}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(Interval);
   const [answer, setAnswer] = useState<string | null>(null);
@@ -30,6 +33,9 @@ export const TimedFeedbackDialog: React.FC = () => {
     if (!isOpen && timeRemaining > 0) {
       timer = setInterval(() => {
         setTimeRemaining((prevTime) => {
+          if(!isWebCamOn) {
+            return Interval
+          }
           if (prevTime === 1) {
             clearInterval(timer);
             setIsOpen(true);
