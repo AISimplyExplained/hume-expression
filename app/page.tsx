@@ -949,7 +949,9 @@ export default function LecturePage() {
           setShowWebCamAlert={setShowWebCamAlert}
           startWebCam={startVideoStream}
         />
-        <TimedFeedbackDialog />
+        <TimedFeedbackDialog 
+          isWebCamOn={isWebCamOn}
+        />
         <AchievementAlertDialog
           open={showAchievement}
           setOpen={setShowAchievement}
