@@ -4,22 +4,16 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { EmotionName, emotions } from '@/lib/types';
 import { supabase } from '@/lib/utilities/supabase';
-
+import { Point } from '@/lib/types';
+import { EmotionMap } from '@/lib/data/emotion';
 
 interface Props {
-  sortedEmotion: {
-    emotion: string;
-    score: number;
-  }[]
+  emotionMap: EmotionMap | null
+  engagementHistory: Point[]
+  setEngagementHistory: React.Dispatch<React.SetStateAction<Point[]>>
 }
 
-type Point = {
-  time: string;
-  emotion: EmotionName;
-  score: number;
-}
-
-const colors = [
+export const colors = [
   { color: "#000", emotion: "Neutral" },
   { color: "#c66a26", emotion: "Confusion" },
   { color: "#998644", emotion: "Doubt" },
@@ -147,51 +141,53 @@ const insertData = async ({ date, emotion, score }: { date: string, emotion: str
   }
 }
 
-export default function ExpressionGraph({ sortedEmotion }: Props) {
-  const [data, setData] = useState<Point[]>([{time: '00:00:00', emotion: 'Concentration', score: 0.0}]);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setData(prevData => {
-        if (sortedEmotion.length === 0) {
-          return prevData;
-        }
+export default function ExpressionGraph({ engagementHistory }: Props) {
 
-        let selectedEmotion: Point | null = null;
+  
+  
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setEngagementHistory(prevData => {
+  //       if (sortedEmotion.length === 0) {
+  //         return prevData;
+  //       }
 
-        for (let i = 0; i < sortedEmotion.length; i++) {
-          const emotion = sortedEmotion[i].emotion;
-          for (let j = 0; j < emotions.length; j++) {
-            if (emotion === emotions[j]) {
-              const date = new Date().toLocaleTimeString()
-              selectedEmotion = {
-                time: date,
-                emotion: sortedEmotion[i].emotion as EmotionName,
-                score: sortedEmotion[i].score
-              }
-              insertData({
-                date: date,
-                emotion: selectedEmotion.emotion,
-                score: selectedEmotion.score
-              }).then(() => { })
-              break;
-            }
-          }
-          if (selectedEmotion) {
-            break;
-          }
-        }
+  //       let selectedEmotion: Point | null = null;
 
-        if (!selectedEmotion) {
-          return prevData;
-        }
-        console.log(selectedEmotion)
-        const newData = [...prevData, selectedEmotion];
-        return newData.slice(-8);
-      });
-    }, 1000);
+  //       for (let i = 0; i < sortedEmotion.length; i++) {
+  //         const emotion = sortedEmotion[i].emotion;
+  //         for (let j = 0; j < emotions.length; j++) {
+  //           if (emotion === emotions[j]) {
+  //             const date = new Date().toLocaleTimeString()
+  //             selectedEmotion = {
+  //               time: date,
+  //               emotion: sortedEmotion[i].emotion as EmotionName,
+  //               score: sortedEmotion[i].score
+  //             }
+  //             insertData({
+  //               date: date,
+  //               emotion: selectedEmotion.emotion,
+  //               score: selectedEmotion.score
+  //             }).then(() => { })
+  //             break;
+  //           }
+  //         }
+  //         if (selectedEmotion) {
+  //           break;
+  //         }
+  //       }
 
-    return () => clearInterval(interval);
-  }, [sortedEmotion]);
+  //       if (!selectedEmotion) {
+  //         return prevData;
+  //       }
+  //       console.log(selectedEmotion)
+  //       const newData = [...prevData, selectedEmotion];
+  //       return newData.slice(-8);
+  //     });
+  //   }, 1000);
+
+  //   return () => clearInterval(interval);
+  // }, [sortedEmotion]);
 
   return (
     <Card className="font-sans w-full h-full border-none">
@@ -200,7 +196,7 @@ export default function ExpressionGraph({ sortedEmotion }: Props) {
       </CardHeader> */}
       {/* <CardContent className="w-full h-full"> */}
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} 
+          <LineChart data={engagementHistory.slice(-8)} 
               margin={{ top: 20, right: 20, bottom: 10, left: 35 }}>
             <CartesianGrid strokeDasharray="5 5" horizontal={true} vertical={false} />
               <XAxis

@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
 import { Menu, X, Moon, Sun, Webcam, Pause, RadioTower, ChartSpline, XIcon } from "lucide-react";
 import EmotionSpiderChart from "@/components/EmotionSpider";
-import ExpressionGraph from "@/components/ExpressionGraph";
+import ExpressionGraph, { colors } from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
 import { Emotion, EmotionMap } from "@/lib/data/emotion";
 import Bored from "@/components/Bored";
@@ -24,6 +24,8 @@ import { useTitleStore } from "@/lib/store";
 import WebcamAlertDialog from "@/components/WebCamAlert";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { TimedFeedbackDialog } from "@/components/TimesFeedBack";
+import { EmotionName, Point } from "@/lib/types";
+import AchievementAlertDialog from "@/components/AchievementAlertDialog";
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -104,9 +106,11 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
-
+  
+  const [showAchievement, setShowAchievement] = useState<boolean>(false);
+  const [engagementHistory, setEngagementHistory] = useState<Point[]>([{time: '00:00:00', emotion: 'Concentration', score: 0.0}]);
   const { setTitle } = useTitleStore();
-  console.log(completedChapters)
+  
 
   const navigationItems = useMemo(
     () => [
@@ -324,8 +328,12 @@ export default function LecturePage() {
 
   const handleChapterComplete = useCallback((chapterId: string) => {
     setCompletedChapters((prev) => new Set(prev).add(chapterId));
-    setShowEngagement(true)
-  }, []);
+    const engagementPercentage = calculateEngagementPercentage(engagementHistory);
+    console.log(engagementPercentage);
+    if(engagementPercentage > 50) setShowAchievement(true)
+  }, [engagementHistory]);
+
+  console.log(engagementHistory)
 
   const socketRef = useRef<WebSocket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -571,6 +579,65 @@ export default function LecturePage() {
     setShowEngagement(isOpen)
   }
 
+  useEffect(() => {
+    setEngagementHistory(prevData => {
+      if (!emotionMap) {
+        return prevData;
+      }
+  
+      let maxEmotion = null;
+      let maxScore = -Infinity;
+
+      colors.forEach(({ emotion }) => {
+        const score = emotionMap[emotion];
+        if (score > maxScore) {
+          maxScore = score;
+          maxEmotion = emotion;
+        }
+      });
+  
+      if (!maxEmotion) {
+        return prevData;
+      }
+  
+      const date = new Date().toLocaleTimeString();
+      const selectedEmotion: Point = {
+        time: date,
+        emotion: maxEmotion as EmotionName,
+        score: maxScore
+      };
+  
+      // insertData({
+      //   date: date,
+      //   emotion: selectedEmotion.emotion,
+      //   score: selectedEmotion.score
+      // })
+      //   .then(() => console.log('Data inserted successfully!'))
+      //   .catch(err => console.error('Error inserting data:', err));
+  
+      const newData = [...prevData, selectedEmotion];
+      return newData; // Keep only the last 8 records
+    });
+  }, [emotionMap]);
+  
+  const calculateEngagementPercentage = (engagementHistory: Point[]): number => {
+    const stronglyEngagedEmotions = ["Concentration", "Interest", "Joy", "Doubt", "Calmness", "Confusion"];
+    const totalScore = engagementHistory.reduce((acc, entry) => acc + entry.score, 0);
+
+    if (totalScore === 0) return 0;
+
+    const stronglyEngagedScore = engagementHistory
+      .filter(entry => stronglyEngagedEmotions.includes(entry.emotion))
+      .reduce((acc, entry) => acc + entry.score, 0);
+
+    return (stronglyEngagedScore / totalScore) * 100;
+  };
+
+  
+
+  const engagementPercentage = calculateEngagementPercentage(engagementHistory);
+  console.log(engagementPercentage.toFixed(2));
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
@@ -616,6 +683,7 @@ export default function LecturePage() {
         <main className="flex-1 p-4">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Video Content on left */}
               <div
                 ref={contentRef}
                 className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
@@ -638,6 +706,8 @@ export default function LecturePage() {
                   toggleFullscreen={toggleFullscreen}
                 />
               </div>
+
+              {/* Engagement */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold dark:text-white">
@@ -657,14 +727,7 @@ export default function LecturePage() {
                         <DialogDescription >
                             <p>{"Your learning journey was dynamic! Here's how your focus levels shifted throughout the course. Based on this data, we've adjusted future content to match your preferred learning pace."}</p>
                         </DialogDescription>
-                        <ExpressionGraph sortedEmotion={sortedEmotions} />
-                        {/* <DialogFooter className="justify-end mr-5">
-                          <DialogClose asChild>
-                            <Button type="button" variant="secondary" className="shadow-md" onClick={() => setShowEngagement(false)}>
-                              Close
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter> */}
+                        <ExpressionGraph emotionMap={emotionMap} engagementHistory={engagementHistory} setEngagementHistory={setEngagementHistory} />
                       </DialogContent>
                     </Dialog>
                     <Button
@@ -791,7 +854,7 @@ export default function LecturePage() {
           </div>
         </main>
         {/* <EmotionSpiderChart sortedEmotions={sortedEmotions} /> */}
-        <ExpressionGraph sortedEmotion={sortedEmotions} />
+        {/* <ExpressionGraph sortedEmotion={sortedEmotions} /> */}
         <Bored
           isPlaying={isPlaying}
           isStreaming={isStreaming}
@@ -801,6 +864,12 @@ export default function LecturePage() {
         />
         <WebcamAlertDialog showAlertDialog={showWebCamAlert} setShowWebCamAlert={setShowWebCamAlert} startWebCam={startVideoStream} />
         <TimedFeedbackDialog />
+        <AchievementAlertDialog
+          open={showAchievement}
+          setOpen={setShowAchievement}
+          title="Achievement Unlocked!"
+          description={`You've unlocked the '${currentLesson} Prodigy' badge for mastering ${currentLesson}. Keep going to unlock more achievements!`}
+        />
       </div>
     </ErrorBoundary>
   );

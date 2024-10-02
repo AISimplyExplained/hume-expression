@@ -11,6 +11,12 @@ export const tabs: Tab[] = [
   { id: "prosody", label: "Speech Prosody" },
 ];
 
+export type Point = {
+  time: string;
+  emotion: EmotionName;
+  score: number;
+}
+
 export type EmotionName =
   | "Disappointment"
   | "Boredom"
