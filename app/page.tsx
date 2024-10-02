@@ -26,6 +26,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { TimedFeedbackDialog } from "@/components/TimesFeedBack";
 import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
+import {EnergyIcon, EnergyBadge} from '../components/Energy'
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -672,14 +673,7 @@ export default function LecturePage() {
 
               <div className="flex items-center space-x-2">
                 <div className="flex items-center">
-                  <div className="relative w-10 h-10 flex items-center justify-center bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 rounded-full shadow-lg border-2 border-yellow-400 overflow-hidden group transition-transform duration-200 hover:scale-110">
-                    <div className="absolute inset-0 bg-yellow-200 opacity-0 group-hover:opacity-20 transition-opacity duration-200"></div>
-                    <div className="relative z-10">
-                      <Zap size={20} className="text-white drop-shadow-md" />
-                    </div>
-                    <div className="absolute inset-0 bg-black opacity-10 rounded-full"></div>
-                  </div>
-                  <span className="ml-2 text-xl font-bold text-yellow-500 drop-shadow-sm">{100}</span>
+                  <EnergyIcon energy={50}/>
                 </div>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
@@ -691,12 +685,12 @@ export default function LecturePage() {
         </header>
         {renderMobileMenu}
         <main className="flex-1 p-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="max-w-[86rem] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               {/* Video Content on left */}
               <div
                 ref={contentRef}
-                className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
+                className="md:col-span-3 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
                 <h2 className="text-xl font-bold mb-4 dark:text-white">
                   {currentChapter
@@ -718,7 +712,7 @@ export default function LecturePage() {
               </div>
 
               {/* Engagement */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold dark:text-white">
                     Engagement
@@ -852,6 +846,16 @@ export default function LecturePage() {
                   />
                 </div>
               </div>
+
+              {/*Badges */}
+              <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                  <h2 className="text-xl w-full font-bold dark:text-white">
+                    Badges
+                  </h2>
+                  <div className="flex items-center justify-center pt-6">
+                    <EnergyBadge energy={500}/>
+                  </div>
+              </div>
             </div>
             <div className="mt-4">
               <Curriculum
@@ -881,6 +885,8 @@ export default function LecturePage() {
           description={`You've unlocked the '${currentLesson} Prodigy' badge for mastering ${currentLesson}. Keep going to unlock more achievements!`}
         />
       </div>
+      <EnergyBadge energy={687} />
+
     </ErrorBoundary>
   );
 }
