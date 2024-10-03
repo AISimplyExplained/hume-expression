@@ -162,7 +162,7 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
       case "quiz":
         const quizData = JSON.parse(currentChapter.content);
         return (
-          <div className="relative aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
+          <div className="relative bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
             {fullscreenButton}
             <Quiz
               questions={quizData}

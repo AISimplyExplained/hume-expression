@@ -105,6 +105,7 @@ function DarkModeToggle() {
 }
 
 export default function LecturePage() {
+
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(
     new Set()

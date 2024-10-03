@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Trophy, Star, ChevronRight } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
+import OpenAI from "openai";
+
 
 interface Question {
   question: string;
@@ -26,6 +29,12 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hint, setHint] = useState("")
+  useEffect(() => {
+    setHint("")
+    setHintLoading(false)
+  }, [currentQuestion, selectedAnswer])
 
   const handleAnswer = (answerIndex: number) => {
     setSelectedAnswer(answerIndex);
@@ -49,6 +58,37 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
     }
   };
 
+  async function getHint() {
+    setHintLoading(true);
+    try{
+      const res = await fetch("/api/hints", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `Can you give a hint for this question in a single line: ${JSON.stringify(questions[currentQuestion])}`,
+        }),
+      });
+    
+      if (!res.ok) {
+        console.error("Failed to fetch hint");
+        return;
+      }
+      const data = await res.json(); // Parse the response JSON
+      setHint(data.res)
+    }
+    catch(error) {
+      console.error("Error fetching hint:", error);
+    }
+    finally {
+      setHintLoading(false);
+    }
+  }
+  
+
+
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -57,6 +97,31 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
           <Badge variant="secondary" className="text-lg">
             Question {currentQuestion + 1}/{questions.length}
           </Badge>
+          <Button onClick={getHint} disabled={hintLoading}>
+            {"Ask Transformer AI"}
+            {hintLoading && (
+              <svg
+                className="animate-spin ml-2 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
+                ></path>
+              </svg>
+            )}
+        </Button>
         </div>
         <Progress value={((currentQuestion + 1) / questions.length) * 100} className="mt-2" />
       </CardHeader>
@@ -94,6 +159,15 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
           <Button onClick={nextQuestion} className="ml-auto">
             {currentQuestion < questions.length - 1 ? "Next Question" : "Finish Quiz"} <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
+        )}
+        {hint && (
+          <div>
+            <hr className='w-full'/>
+            <p className='mt-4 text-sm font-bold'>Hints by Transformer AI</p>
+            <div className="mt-2">
+              <p className="text-xs text-gray-700">{hint}</p>
+            </div>
+          </div>
         )}
       </CardFooter>
     </Card>
