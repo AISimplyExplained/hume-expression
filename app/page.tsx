@@ -50,7 +50,7 @@ import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
 import {EnergyIcon, EnergyBadge} from '../components/Energy'
 
-export type ChapterType = "video" | "text" | "quiz";
+export type ChapterType = "video" | "text" | "quiz" | "game";
 
 export interface Chapter {
   id: string;
@@ -215,6 +215,12 @@ export default function LecturePage() {
               correctAnswer: 1,
             },
           ]),
+        },
+        {
+          id: "1.5",
+          title: "Build Your Own Transformer",
+          type: "game",
+          content: ""
         },
       ],
     },

@@ -5,7 +5,7 @@ import { BookOpen, ChevronDown, ChevronRight, FileText, Video, HelpCircle, Check
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type ChapterType = 'video' | 'text' | 'quiz';
+export type ChapterType = 'video' | 'text' | 'quiz' | "game";
 
 export interface Chapter {
   id: string;

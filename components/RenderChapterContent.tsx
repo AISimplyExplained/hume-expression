@@ -5,6 +5,7 @@ import Teleprompter from "./Teleprompter";
 import Quiz from "./Quiz";
 import { Chapter } from "./Curriculum";
 import { useChapterEnded, useTitleStore } from "@/lib/store";
+import TransformerGame from "./Game";
 
 interface CourseCompletion {
   quizzesTaken: number;
@@ -179,6 +180,9 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
             />
           </div>
         );
+
+      case "game":
+        return <TransformerGame />
       default:
         return null;
     }
