@@ -1,8 +1,10 @@
 "use client"
-import React, { useEffect, useRef } from 'react';
-import { Star, Trophy } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Trophy } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import Confetti, { ConfettiRef } from '../ui/confetti';
+import { Button } from '../ui/button';
+import confetti from "canvas-confetti";
+
 
 interface LevelDialogProps {
   open: boolean;
@@ -19,11 +21,39 @@ const LevelDialog: React.FC<LevelDialogProps> = ({
   description,
   level
 }) => {
-  const confettiRef = useRef<ConfettiRef>(null);
+  const handleClick = () => {
+    const end = Date.now() + 2 * 1000; // 2 seconds
+    const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+ 
+    const frame = () => {
+      if (Date.now() > end) return;
+ 
+      // confetti({
+      //   particleCount: 2,
+      //   angle: 60,
+      //   spread: 55,
+      //   startVelocity: 60,
+      //   origin: { x: 0, y: 0.5 },
+      //   colors: colors,
+      // });
+      confetti({
+        particleCount: 2,
+        angle: 150,
+        spread: 80,
+        startVelocity: 60,
+        origin: { x: 1, y: 0.5 },
+        colors: colors,
+      });
+ 
+      requestAnimationFrame(frame);
+    };
+ 
+    frame();
+  };
 
-  // useEffect(() => {
-  //   confettiRef.current?.fire({});
-  // }, [])
+  useEffect(() => {
+    if(open)handleClick();
+  }, [open])
 
   return (
     <>
@@ -42,13 +72,15 @@ const LevelDialog: React.FC<LevelDialogProps> = ({
         }
       `}</style>
       <AlertDialog open={open} onOpenChange={setOpen} >
-        <AlertDialogContent className="sm:max-w-[500px] bg-transparent border-none shadow-none h-screen flex flex-col justify-center">
+        <AlertDialogContent className="sm:max-w-[500px] bg-transparent border-none shadow-none">
+          <AlertDialogTitle >
             <div className="flex items-center justify-center text-2xl font-bold text-yellow-500">
               <div className="mr-2 animate-rotate-z">
                 <Trophy className="size-16" />
               </div>
               {title}
             </div>
+          </AlertDialogTitle>
           <AlertDialogDescription className="text-center text-lg text-white">
             {description}
           </AlertDialogDescription>
@@ -57,15 +89,6 @@ const LevelDialog: React.FC<LevelDialogProps> = ({
               {"Hurrah"}
             </AlertDialogAction>
           </AlertDialogFooter>
-          <Confetti
-            // options={{
-            //   gravity: 0.5,
-            //   particleCount: 50,
-            // }}
-            ref={confettiRef}
-            // manualstart={false}
-            className="absolute left-0 top-0 z-0 size-full"
-          />
         </AlertDialogContent>
       </AlertDialog>
     </>
