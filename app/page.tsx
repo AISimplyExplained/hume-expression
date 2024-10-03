@@ -22,9 +22,7 @@ import {
   RadioTower,
   ChartSpline,
   XIcon,
-  Zap,
 } from "lucide-react";
-import EmotionSpiderChart from "@/components/EmotionSpider";
 import ExpressionGraph, { colors } from "@/components/ExpressionGraph";
 import Curriculum from "@/components/Curriculum";
 import { Emotion, EmotionMap } from "@/lib/data/emotion";
@@ -35,10 +33,8 @@ import { useTitleStore } from "@/lib/store";
 import WebcamAlertDialog from "@/components/WebCamAlert";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -48,7 +44,8 @@ import TimerDialog from "@/components/TimerDialog";
 import ConfidenceAssessment from "@/components/ConfidenceAssessment";
 import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
-import {EnergyIcon, EnergyBadge} from '../components/Energy'
+import {EnergyIcon, EnergyBadge, StreakIcon} from '../components/Energy'
+import LevelDialog from "@/components/CustomDialogs/LevelDialog";
 
 export type ChapterType = "video" | "text" | "quiz";
 
@@ -131,18 +128,12 @@ export default function LecturePage() {
     "Applied Transformer Architecture"
   );
   const [energy, setEnergy] = useState<number>(0)
-  const [animateEnergy, setAnimateEnergy] = useState(false);
-
-  useEffect(() => {
-    setAnimateEnergy(true);
-    const timeout = setTimeout(() => setAnimateEnergy(false), 500);
-    return () => clearTimeout(timeout);
-  }, [energy]);
-
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
-  const [engagementHistory, setEngagementHistory] = useState<Point[]>([
-    { time: "00:00:00", emotion: "Concentration", score: 0.0 },
-  ]);
+  const [showLevelUpgrade, setShowLevelUpgrade] = useState<boolean>(false);
+  const [engagementHistory, setEngagementHistory] = useState<Point[]>([{ time: "00:00:00", emotion: "Concentration", score: 0.0 }]);
+  const [streak, setStreak] = useState<number>(0);
+  const [level, setLevel] = useState<number>(0);
+  
   const { setTitle } = useTitleStore();
   
 
@@ -333,6 +324,13 @@ export default function LecturePage() {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, []);
+
+  useEffect(() => {
+    if(streak !== 0 && streak % 3 === 0){
+      setShowLevelUpgrade(true);
+      setLevel(streak % 3)
+    }
+  }, [streak])
 
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen((prev) => !prev);
@@ -680,9 +678,6 @@ export default function LecturePage() {
     return (stronglyEngagedScore / totalScore) * 100;
   };
 
-  const engagementPercentage = calculateEngagementPercentage(engagementHistory);
-  console.log(engagementPercentage.toFixed(2));
-
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
@@ -716,8 +711,10 @@ export default function LecturePage() {
               </div>
 
               <div className="flex items-center space-x-2">
+                <StreakIcon count={streak}/> 
+
                 <div className="flex items-center">
-                  <EnergyIcon energy={energy} animate={animateEnergy}/>
+                  <EnergyIcon energy={energy}/>
                 </div>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
@@ -753,6 +750,7 @@ export default function LecturePage() {
                   setCourseCompletion={setCourseCompletion}
                   toggleFullscreen={toggleFullscreen}
                   setEnergy={setEnergy}
+                  setStreak={setStreak}
                 />
               </div>
 
@@ -936,8 +934,6 @@ export default function LecturePage() {
             </div>
           </div>
         </main>
-        {/* <EmotionSpiderChart sortedEmotions={sortedEmotions} /> */}
-        {/* <ExpressionGraph sortedEmotion={sortedEmotions} /> */}
         <Bored
           isPlaying={isPlaying}
           isStreaming={isStreaming}
@@ -958,6 +954,13 @@ export default function LecturePage() {
           setOpen={setShowAchievement}
           title="Achievement Unlocked!"
           description={`You've unlocked the '${currentLesson} Prodigy' badge for mastering ${currentLesson}. Keep going to unlock more achievements!`}
+        />
+        <LevelDialog
+          open={showLevelUpgrade}
+          setOpen={setShowLevelUpgrade}
+          title="New Level Unlocked!"
+          level={level}
+          description={`Keep going to unlock more achievements!`}
         />
         <TimerDialog isPlaying={isPlaying} />
         <ConfidenceAssessment />

@@ -25,6 +25,7 @@ interface ChapterContentProps {
   isPlaying: boolean;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   setEnergy: React.Dispatch<React.SetStateAction<number>>;
+  setStreak: React.Dispatch<React.SetStateAction<number>>;
 }
 
 declare global {
@@ -45,7 +46,8 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
   currentLesson,
   isPlaying,
   setIsPlaying,
-  setEnergy
+  setEnergy,
+  setStreak
 }) => {
   const {setTitle} = useTitleStore()
   const videoContentRef = useRef<HTMLVideoElement | null>(null);
@@ -176,6 +178,7 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
                 }));
               }}
               setEnergy={setEnergy}
+              setStreak={setStreak}
             />
           </div>
         );

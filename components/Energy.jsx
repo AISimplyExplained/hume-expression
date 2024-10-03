@@ -1,6 +1,7 @@
 "use client"
-import React from 'react';
-import { Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Zap , Flame} from 'lucide-react';
+
 
 export const EnergyBadge = ({ energy }) => {
   return (
@@ -70,9 +71,15 @@ export const EnergyBadge = ({ energy }) => {
   );
 };
 
-export const EnergyIcon = ({ energy = 100, animate }) => {
+export const EnergyIcon = ({ energy = 100 }) => {
+  const [animateEnergy, setAnimateEnergy] = useState(false);
+  useEffect(() => {
+    setAnimateEnergy(true);
+    const timeout = setTimeout(() => setAnimateEnergy(false), 500);
+    return () => clearTimeout(timeout);
+  }, [energy]);
   return (
-    <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
+    <div className="select-none flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
       <style jsx>{`
         @keyframes slideUp {
           0% {
@@ -130,7 +137,7 @@ export const EnergyIcon = ({ energy = 100, animate }) => {
           fontWeight: 'bold',
           color: '#eab308',
           filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))',
-          animation: animate ? 'slideUp 0.5s ease-out' : 'none',
+          animation: animateEnergy ? 'slideUp 0.5s ease-out' : 'none',
 
         }}
       >
@@ -139,3 +146,45 @@ export const EnergyIcon = ({ energy = 100, animate }) => {
     </div>
   );
 };
+
+export const StreakIcon = ({count}) => {
+  const [animate, setAnimate] = useState(false);
+  useEffect(() => {
+    setAnimate(true);
+    const timeout = setTimeout(() => setAnimate(false), 500);
+    return () => clearTimeout(timeout);
+  }, [count]);
+
+  return (
+    <div className="flex select-none" style={{ display: 'flex', alignItems: 'center' }}>
+      <style jsx>{`
+        @keyframes slideUp {
+          0% {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
+        <div 
+          className="border-2 rounded-full border-[#FF5910] shadow-md"
+          style={{padding: "3px"}}
+        >
+          <Flame size={30} fill="#FF5910" color="#FF3344"/>
+        </div>
+        <span 
+          style={{
+            marginLeft: '0.5rem',
+            fontSize: '1.25rem',
+            fontWeight: 'bold',
+            color: '#FF5910',
+            filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))',
+            animation: animate ? 'slideUp 0.5s ease-out' : 'none',
+          }}
+        >{count}</span>
+    </div>
+  )
+}

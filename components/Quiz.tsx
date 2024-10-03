@@ -20,10 +20,10 @@ interface QuizProps {
   questions: Question[];
   onComplete: (score: number) => void;
   setEnergy: React.Dispatch<React.SetStateAction<number>>;
-
+  setStreak: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
+const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy, setStreak }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -42,8 +42,10 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
 
     if (answerIndex === questions[currentQuestion].correctAnswer) {
       setEnergy(prev => prev+20)
+      setStreak(prev => prev+1);
       setScore(score + 1);
     }
+    else setStreak(0)
   };
 
   const nextQuestion = () => {
@@ -155,19 +157,19 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, setEnergy }) => {
         )}
       </CardContent>
       <CardFooter className="justify-between">
+        {hint && (
+            <div>
+              <hr className='w-full'/>
+              <p className='mt-4 text-sm font-bold'>Hints by Transformer AI</p>
+              <div className="mt-2">
+                <p className="text-xs text-gray-700">{hint}</p>
+              </div>
+            </div>
+          )}
         {showResult && !quizCompleted && (
           <Button onClick={nextQuestion} className="ml-auto">
             {currentQuestion < questions.length - 1 ? "Next Question" : "Finish Quiz"} <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
-        )}
-        {hint && (
-          <div>
-            <hr className='w-full'/>
-            <p className='mt-4 text-sm font-bold'>Hints by Transformer AI</p>
-            <div className="mt-2">
-              <p className="text-xs text-gray-700">{hint}</p>
-            </div>
-          </div>
         )}
       </CardFooter>
     </Card>
