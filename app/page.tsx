@@ -71,7 +71,7 @@ const Home: React.FC = () => {
         </header>
 
         <main>
-          <section className="relative min-h-screen flex items-center">
+          <section className="relative min-h-[70vh] flex items-center">
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-2xl">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Experience Learning That Understands You</h1>
