@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { Brain, Book, MessageCircle, Shield } from 'lucide-react';
-
+import Link from 'next/link';
 interface FeatureProps {
   title: string;
   description: string;
@@ -76,8 +76,11 @@ const Home: React.FC = () => {
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Experience Learning That Understands
                     You</h1>
                   <p className="text-lg mb-6">A groundbreaking approach bringing emotional awareness to education.</p>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full">Learn more
-                  </button>
+                  <Link href="/" passHref>
+      <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full text-lg">
+        Contact us
+      </button>
+    </Link>
                 </div>
               </div>
             </section>
