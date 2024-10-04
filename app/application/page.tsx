@@ -685,7 +685,7 @@ export default function LecturePage() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
         <header className="bg-white dark:bg-gray-800 shadow z-10 sticky top-0">
-          <div className="mx-auto max-w-[86rem]">
+          <div className="mx-auto max-w-[95rem]">
             <div className="flex justify-between items-center h-16 ">
               <div className="flex items-center">
                 <Button
@@ -733,12 +733,12 @@ export default function LecturePage() {
         </header>
         {renderMobileMenu}
         <main className="flex-1 p-4">
-          <div className="max-w-[86rem] mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <div className="max-w-[95rem] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-8 gap-4">
               {/* Video Content on left */}
               <div
                   ref={contentRef}
-                  className="md:col-span-3 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
+                  className="md:col-span-4 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
                 <h2 className="text-xl font-bold mb-7 dark:text-white">
                   {currentChapter
@@ -894,7 +894,7 @@ export default function LecturePage() {
                 </div>
               </div>
               {/* Badges */}
-              <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <h2 className="text-xl w-full font-bold dark:text-white my-3">Badges</h2>
                 <hr />
                 <div className="flex flex-col items-center justify-center pt-6">
