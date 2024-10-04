@@ -744,7 +744,7 @@ export default function LecturePage() {
                   ref={contentRef}
                   className="md:col-span-3 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
-                <h2 className="text-xl font-bold mb-4 dark:text-white">
+                <h2 className="text-xl font-bold mb-7 dark:text-white">
                   {currentChapter
                       ? currentChapter.title
                       : "Welcome to Applied AI"}
