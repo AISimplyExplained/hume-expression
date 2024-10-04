@@ -116,8 +116,8 @@ const Home: React.FC = () => {
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold mb-4">Join the Transformation</h2>
             <p className="text-lg mb-8 max-w-3xl mx-auto">
-              We're on a mission to make education more responsive and effective.
-              We're seeking partners and investors who share our vision of
+              We&apos;re on a mission to make education more responsive and effective.
+              We&apos;re seeking partners and investors who share our vision of
               personalized, emotion-aware learning.
             </p>
             <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full text-lg">
