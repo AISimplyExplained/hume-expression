@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         },
         {
           role: "assistant",
-          content: "please compare these codes.",
+          content: "please compare these codes. If the variable names, or the method to calculate the answer are different then It is fine. But the answer should be same like completed code.",
         },
         {
           role: "user",
