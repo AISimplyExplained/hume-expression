@@ -10,8 +10,6 @@ import TransformerGame from "./Game";
 interface CourseCompletion {
   quizzesTaken: number;
   overallProgress: number;
-  videosWatched: number;
-  assignmentsCompleted: number;
 }
 
 interface ChapterContentProps {

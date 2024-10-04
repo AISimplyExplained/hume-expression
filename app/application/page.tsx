@@ -111,9 +111,7 @@ export default function LecturePage() {
   const [showEngagement, setShowEngagement] = useState<boolean>(false);
   const [progress, setProgress] = useState(0);
   const [courseCompletion, setCourseCompletion] = useState({
-    videosWatched: 0,
     quizzesTaken: 0,
-    assignmentsCompleted: 0,
     overallProgress: 0,
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -301,9 +299,7 @@ export default function LecturePage() {
   useEffect(() => {
     const completionTimer = setInterval(() => {
       setCourseCompletion((prev) => ({
-        videosWatched: Math.min(prev.videosWatched + 1, 10),
         quizzesTaken: Math.min(prev.quizzesTaken + 0.5, 5),
-        assignmentsCompleted: Math.min(prev.assignmentsCompleted + 0.25, 3),
         overallProgress: Math.min(prev.overallProgress + 2, 100),
       }));
     }, 5000);
@@ -869,18 +865,7 @@ export default function LecturePage() {
                   <h2 className="text-xl font-bold mb-4 dark:text-white">
                     Course Progress
                   </h2>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium dark:text-white">
-                      Videos Watched
-                    </span>
-                    <span className="text-sm font-medium dark:text-white">
-                      {courseCompletion.videosWatched}/10
-                    </span>
-                  </div>
-                  <Progress
-                    value={(courseCompletion.videosWatched / 10) * 100}
-                    className="w-full"
-                  />
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">
                       Quizzes Taken
@@ -893,18 +878,7 @@ export default function LecturePage() {
                     value={(courseCompletion.quizzesTaken / 5) * 100}
                     className="w-full"
                   />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium dark:text-white">
-                      Assignments Completed
-                    </span>
-                    <span className="text-sm font-medium dark:text-white">
-                      {courseCompletion.assignmentsCompleted}/3
-                    </span>
-                  </div>
-                  <Progress
-                    value={(courseCompletion.assignmentsCompleted / 3) * 100}
-                    className="w-full"
-                  />
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-white">
                       Overall Progress
