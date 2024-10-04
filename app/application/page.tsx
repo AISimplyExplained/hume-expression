@@ -738,7 +738,7 @@ export default function LecturePage() {
               {/* Video Content on left */}
               <div
                   ref={contentRef}
-                  className="md:col-span-4 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
+                  className="md:col-span-5 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
                 <h2 className="text-xl font-bold mb-7 dark:text-white">
                   {currentChapter
@@ -894,7 +894,7 @@ export default function LecturePage() {
                 </div>
               </div>
               {/* Badges */}
-              <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <h2 className="text-xl w-full font-bold dark:text-white my-3">Badges</h2>
                 <hr />
                 <div className="flex flex-col items-center justify-center pt-6">
