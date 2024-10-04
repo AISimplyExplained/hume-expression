@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
+import Image from "next/image"
 import {
   Menu,
   X,
@@ -688,27 +689,34 @@ export default function LecturePage() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
         <header className="bg-white dark:bg-gray-800 shadow z-10 sticky top-0">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
+          <div className="mx-auto max-w-[86rem]">
+            <div className="flex justify-between items-center h-16 ">
               <div className="flex items-center">
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mr-2 md:hidden"
-                  onClick={toggleMobileMenu}
-                  aria-label="Toggle menu"
+                    variant="ghost"
+                    size="icon"
+                    className="mr-2 md:hidden"
+                    onClick={toggleMobileMenu}
+                    aria-label="Toggle menu"
                 >
                   {mobileMenuOpen ? (
-                    <X className="h-6 w-6" />
+                      <X className="h-6 w-6"/>
                   ) : (
-                    <Menu className="h-6 w-6" />
+                      <Menu className="h-6 w-6"/>
                   )}
                 </Button>
                 <Button
-                  variant="link"
-                  onClick={() => router.push("/")}
-                  className="text-2xl font-bold dark:text-white mr-4"
+                    variant="link"
+                    onClick={() => router.push("/")}
+                    className="text-2xl font-bold dark:text-white mr-4 flex items-center"
                 >
+                  <Image
+                      src="/logo.png"
+                      alt="Adaptive Learning Logo"
+                      width={30}
+                      height={30}
+                      className="mr-2"
+                  />
                   ADAPTIVE LEARNING
                 </Button>
                 <nav className="hidden md:flex space-x-2">
@@ -716,16 +724,13 @@ export default function LecturePage() {
                 </nav>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <StreakIcon count={streak}/> 
-
-                <div className="flex items-center">
-                  <EnergyIcon energy={energy}/>
-                </div>
+              <div className="flex items-center space-x-4">
+                <StreakIcon count={streak}/>
+                <EnergyIcon energy={energy}/>
+                <DarkModeToggle/>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
                 </Avatar>
-                <DarkModeToggle />
               </div>
             </div>
           </div>
@@ -736,25 +741,25 @@ export default function LecturePage() {
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               {/* Video Content on left */}
               <div
-                ref={contentRef}
-                className="md:col-span-3 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
+                  ref={contentRef}
+                  className="md:col-span-3 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
                 <h2 className="text-xl font-bold mb-4 dark:text-white">
                   {currentChapter
-                    ? currentChapter.title
-                    : "Welcome to Applied AI"}
+                      ? currentChapter.title
+                      : "Welcome to Applied AI"}
                 </h2>
                 <RenderChapterContent
-                  isPlaying={isPlaying}
-                  setIsPlaying={setIsPlaying}
-                  currentChapter={currentChapter}
-                  currentLesson={currentLesson}
-                  isOpen={isOpen}
-                  handleChapterComplete={handleChapterComplete}
-                  isFullscreen={isFullscreen}
-                  lessonContent={lessonContent}
-                  setCourseCompletion={setCourseCompletion}
-                  toggleFullscreen={toggleFullscreen}
+                    isPlaying={isPlaying}
+                    setIsPlaying={setIsPlaying}
+                    currentChapter={currentChapter}
+                    currentLesson={currentLesson}
+                    isOpen={isOpen}
+                    handleChapterComplete={handleChapterComplete}
+                    isFullscreen={isFullscreen}
+                    lessonContent={lessonContent}
+                    setCourseCompletion={setCourseCompletion}
+                    toggleFullscreen={toggleFullscreen}
                   setEnergy={setEnergy}
                   setStreak={setStreak}
                 />
