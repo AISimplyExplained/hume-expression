@@ -160,8 +160,6 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
         ref={containerRef}
         className="flex-grow overflow-hidden bg-secondary relative h-[60vh] sm:h-[50vh] md:h-[40vh] lg:h-[50vh]"
       >
-        <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-secondary to-transparent z-10"></div>
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-secondary to-transparent z-10"></div>
         <div
           ref={contentRef}
           className="absolute inset-x-0 top-0 pt-20 px-4 pb-4"
@@ -191,7 +189,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
                 const match = /language-(\w+)/.exec(className || "");
                 return !inline ? (
                   <pre className="text-xs sm:text-sm md:text-base lg:text-lg bg-gray-800 text-white p-2 rounded whitespace-pre-wrap break-words my-4">
-                    <code className={className} {...props}>
+                    <code className="text-wrap font-mono" {...props}>
                       {children}
                     </code>
                   </pre>
