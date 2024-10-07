@@ -49,8 +49,7 @@ import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
 import {EnergyIcon, EnergyBadge, StreakIcon} from '../../components/Energy'
 import LevelDialog from "@/components/CustomDialogs/LevelDialog";
-import { Thread, useEdgeRuntime } from "@assistant-ui/react";
-
+import Chatbot from "@/components/Chatbot";
 
 export type ChapterType = "video" | "text" | "quiz" | "game";
 
@@ -135,13 +134,8 @@ export default function LecturePage() {
   const [showLevelUpgrade, setShowLevelUpgrade] = useState<boolean>(false);
   const [engagementHistory, setEngagementHistory] = useState<Point[]>([{ time: "00:00:00", emotion: "Concentration", score: 0.0 }]);
   const [streak, setStreak] = useState<number>(0);
-  const [level, setLevel] = useState<number>(0);
-  const [isAssistantToggle, setIsAssistantToggle] = useState<boolean>(false);
-  
+  const [level, setLevel] = useState<number>(0);  
   const { setTitle } = useTitleStore();
-  const runtime = useEdgeRuntime({
-    api: "/api/chat",
-  });
   
 
   const navigationItems = useMemo(
@@ -691,28 +685,6 @@ export default function LecturePage() {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <div className="fixed bottom-10 right-10 z-20">
-        {isAssistantToggle && (
-          <div className="bg-white border w-80 h-[400px] z-20">
-            <Thread 
-              runtime={runtime} 
-              // welcome={{
-              //   suggestions: [
-              //     {
-              //       text: 'Could you answer this question',
-              //       prompt: 'Could you answer this question'
-              //     },
-              //   ]
-              // }}
-            />
-          </div>
-        )}
-        <div className="flex justify-end m-2">
-          <div className="flex justify-center items-center cursor-pointer z-1 relative rounded-full bg-blue-700 size-10" onClick={() => setIsAssistantToggle(!isAssistantToggle)}>
-            {isAssistantToggle ? <ChevronDown color="white"/> : <Bot color="white"/>}
-          </div>
-        </div>
-      </div>
       <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
         <header className="bg-white dark:bg-gray-800 shadow z-10 sticky top-0">
           <div className="mx-auto max-w-[95rem]">
@@ -979,6 +951,7 @@ export default function LecturePage() {
         />
         <TimerDialog isPlaying={isPlaying} />
         <ConfidenceAssessment />
+        <Chatbot />
       </div>
     </ErrorBoundary>
   );
