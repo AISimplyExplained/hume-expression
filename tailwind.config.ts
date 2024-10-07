@@ -74,7 +74,13 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@assistant-ui/react/tailwindcss")({
+      components: ["thread"],
+      shadcn: true 
+    })
+  ],
 } satisfies Config
 
 export default config
