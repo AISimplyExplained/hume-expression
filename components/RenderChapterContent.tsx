@@ -46,9 +46,9 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
   isPlaying,
   setIsPlaying,
   setEnergy,
-  setStreak
+  setStreak,
 }) => {
-  const {setTitle} = useTitleStore()
+  const { setTitle } = useTitleStore();
   const videoContentRef = useRef<HTMLVideoElement | null>(null);
   const youtubePlayerRef = useRef<any>(null);
   const [youtubeReady, setYoutubeReady] = useState(false);
@@ -71,8 +71,7 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-
-    setTitle(currentLesson)
+    setTitle(currentLesson);
     // Load YouTube API
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
@@ -109,13 +108,13 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
     </Button>
   );
 
-  const {setContent} = useChapterEnded()
+  const { setContent } = useChapterEnded();
 
   useEffect(() => {
-    if(currentChapter && currentChapter.type === "text") {
-     setContent(currentChapter.content) 
+    if (currentChapter && currentChapter.type === "text") {
+      setContent(currentChapter.content);
     }
-  },[currentChapter, setContent])
+  }, [currentChapter, setContent]);
 
   const Render = () => {
     if (!currentChapter) return null;
@@ -166,6 +165,7 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
           <div className="relative bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 overflow-auto p-4">
             {fullscreenButton}
             <Quiz
+              content={currentChapter.title}
               questions={quizData}
               onComplete={(score) => {
                 console.log(`Quiz completed with score: ${score}`);
@@ -183,7 +183,7 @@ const ChapterContent: React.FC<ChapterContentProps> = ({
         );
 
       case "game":
-        return <TransformerGame />
+        return <TransformerGame />;
       default:
         return null;
     }

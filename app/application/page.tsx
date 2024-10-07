@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ErrorBoundary } from "react-error-boundary";
-import Image from "next/image"
+import Image from "next/image";
 import {
   Menu,
   X,
@@ -47,9 +47,11 @@ import TimerDialog from "@/components/TimerDialog";
 import ConfidenceAssessment from "@/components/ConfidenceAssessment";
 import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
-import {EnergyIcon, EnergyBadge, StreakIcon} from '../../components/Energy'
+import { EnergyIcon, EnergyBadge, StreakIcon } from "../../components/Energy";
 import LevelDialog from "@/components/CustomDialogs/LevelDialog";
 import Chatbot from "@/components/Chatbot";
+import CourseFeedbackForm from "@/components/CourseFeedbackForm";
+import PersonalizedLearningSummaryDialog from "@/components/PersonalizedLearningSummaryDialog";
 
 export type ChapterType = "video" | "text" | "quiz" | "game";
 
@@ -106,7 +108,6 @@ function DarkModeToggle() {
 }
 
 export default function LecturePage() {
-
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(
     new Set()
@@ -129,14 +130,15 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
-  const [energy, setEnergy] = useState<number>(0)
+  const [energy, setEnergy] = useState<number>(0);
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
   const [showLevelUpgrade, setShowLevelUpgrade] = useState<boolean>(false);
-  const [engagementHistory, setEngagementHistory] = useState<Point[]>([{ time: "00:00:00", emotion: "Concentration", score: 0.0 }]);
+  const [engagementHistory, setEngagementHistory] = useState<Point[]>([
+    { time: "00:00:00", emotion: "Concentration", score: 0.0 },
+  ]);
   const [streak, setStreak] = useState<number>(0);
-  const [level, setLevel] = useState<number>(0);  
+  const [level, setLevel] = useState<number>(0);
   const { setTitle } = useTitleStore();
-  
 
   const navigationItems = useMemo(
     () => [
@@ -176,6 +178,12 @@ export default function LecturePage() {
         },
         {
           id: "1.4",
+          title: "Build Your Own Transformer",
+          type: "game",
+          content: "",
+        },
+        {
+          id: "1.5",
           title: "Transformer Architecture Quiz",
           type: "quiz",
           content: JSON.stringify([
@@ -208,12 +216,6 @@ export default function LecturePage() {
               correctAnswer: 1,
             },
           ]),
-        },
-        {
-          id: "1.5",
-          title: "Build Your Own Transformer",
-          type: "game",
-          content: ""
         },
       ],
     },
@@ -331,11 +333,11 @@ export default function LecturePage() {
   }, []);
 
   useEffect(() => {
-    if(streak !== 0 && streak % 3 === 0){
+    if (streak !== 0 && streak % 3 === 0) {
       setShowLevelUpgrade(true);
-      setLevel(streak % 3)
+      setLevel(streak % 3);
     }
-  }, [streak])
+  }, [streak]);
 
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen((prev) => !prev);
@@ -366,8 +368,9 @@ export default function LecturePage() {
   const handleChapterComplete = useCallback(
     (chapterId: string) => {
       setCompletedChapters((prev) => new Set(prev).add(chapterId));
-      setEnergy(prev => prev+100)
-      const engagementPercentage = calculateEngagementPercentage(engagementHistory);
+      setEnergy((prev) => prev + 100);
+      const engagementPercentage =
+        calculateEngagementPercentage(engagementHistory);
       // if (engagementPercentage > 50) setShowAchievement(true);
       setShowAchievement(true);
     },
@@ -691,29 +694,29 @@ export default function LecturePage() {
             <div className="flex justify-between items-center h-16 ">
               <div className="flex items-center">
                 <Button
-                    variant="ghost"
-                    size="icon"
-                    className="mr-2 md:hidden"
-                    onClick={toggleMobileMenu}
-                    aria-label="Toggle menu"
+                  variant="ghost"
+                  size="icon"
+                  className="mr-2 md:hidden"
+                  onClick={toggleMobileMenu}
+                  aria-label="Toggle menu"
                 >
                   {mobileMenuOpen ? (
-                      <X className="h-6 w-6"/>
+                    <X className="h-6 w-6" />
                   ) : (
-                      <Menu className="h-6 w-6"/>
+                    <Menu className="h-6 w-6" />
                   )}
                 </Button>
                 <Button
-                    variant="link"
-                    onClick={() => router.push("/")}
-                    className="text-2xl font-bold dark:text-white mr-4 flex items-center"
+                  variant="link"
+                  onClick={() => router.push("/")}
+                  className="text-2xl font-bold dark:text-white mr-4 flex items-center"
                 >
                   <Image
-                      src="/logo.png"
-                      alt="Adaptive Learning Logo"
-                      width={30}
-                      height={30}
-                      className="mr-2"
+                    src="/logo.png"
+                    alt="Adaptive Learning Logo"
+                    width={30}
+                    height={30}
+                    className="mr-2"
                   />
                   ADAPTIVE LEARNING
                 </Button>
@@ -723,9 +726,9 @@ export default function LecturePage() {
               </div>
 
               <div className="flex items-center space-x-4">
-                <StreakIcon count={streak}/>
-                <EnergyIcon energy={energy}/>
-                <DarkModeToggle/>
+                <StreakIcon count={streak} />
+                <EnergyIcon energy={energy} />
+                <DarkModeToggle />
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>AL</AvatarFallback>
                 </Avatar>
@@ -739,25 +742,25 @@ export default function LecturePage() {
             <div className="grid grid-cols-1 md:grid-cols-8 gap-4">
               {/* Video Content on left */}
               <div
-                  ref={contentRef}
-                  className="md:col-span-5 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
+                ref={contentRef}
+                className="md:col-span-5 bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
                 <h2 className="text-xl font-bold mb-7 dark:text-white">
                   {currentChapter
-                      ? currentChapter.title
-                      : "Welcome to Applied AI"}
+                    ? currentChapter.title
+                    : "Welcome to Applied AI"}
                 </h2>
                 <RenderChapterContent
-                    isPlaying={isPlaying}
-                    setIsPlaying={setIsPlaying}
-                    currentChapter={currentChapter}
-                    currentLesson={currentLesson}
-                    isOpen={isOpen}
-                    handleChapterComplete={handleChapterComplete}
-                    isFullscreen={isFullscreen}
-                    lessonContent={lessonContent}
-                    setCourseCompletion={setCourseCompletion}
-                    toggleFullscreen={toggleFullscreen}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                  currentChapter={currentChapter}
+                  currentLesson={currentLesson}
+                  isOpen={isOpen}
+                  handleChapterComplete={handleChapterComplete}
+                  isFullscreen={isFullscreen}
+                  lessonContent={lessonContent}
+                  setCourseCompletion={setCourseCompletion}
+                  toggleFullscreen={toggleFullscreen}
                   setEnergy={setEnergy}
                   setStreak={setStreak}
                 />
@@ -897,7 +900,9 @@ export default function LecturePage() {
               </div>
               {/* Badges */}
               <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h2 className="text-xl w-full font-bold dark:text-white my-3">Badges</h2>
+                <h2 className="text-xl w-full font-bold dark:text-white my-3">
+                  Badges
+                </h2>
                 <hr />
                 <div className="flex flex-col items-center justify-center pt-6">
                   {completedChapters && completedChapters.size > 0 ? (
@@ -905,11 +910,12 @@ export default function LecturePage() {
                       <EnergyBadge key={index} energy={500} />
                     ))
                   ) : (
-                    <p className="text-gray-600 dark:text-gray-300">Finish chapter to earn badges</p>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Finish chapter to earn badges
+                    </p>
                   )}
                 </div>
               </div>
-
             </div>
             <div className="mt-4">
               <Curriculum
@@ -933,9 +939,7 @@ export default function LecturePage() {
           setShowWebCamAlert={setShowWebCamAlert}
           startWebCam={startVideoStream}
         />
-        <TimedFeedbackDialog 
-          isWebCamOn={isWebCamOn}
-        />
+        <TimedFeedbackDialog isWebCamOn={isWebCamOn} />
         <AchievementAlertDialog
           open={showAchievement}
           setOpen={setShowAchievement}
@@ -952,6 +956,8 @@ export default function LecturePage() {
         <TimerDialog isPlaying={isPlaying} />
         <ConfidenceAssessment />
         <Chatbot />
+        <CourseFeedbackForm />
+        <PersonalizedLearningSummaryDialog setShowEngagement={setShowEngagement} />
       </div>
     </ErrorBoundary>
   );
