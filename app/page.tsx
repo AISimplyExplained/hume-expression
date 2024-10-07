@@ -78,7 +78,7 @@ const Home: React.FC = () => {
                 <p className="text-lg mb-6">A groundbreaking approach bringing emotional awareness to education.</p>
                 <Link href="/application" passHref>
                   <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full text-lg">
-                    Contact us
+                    Start Now
                   </button>
                 </Link>
               </div>

@@ -42,9 +42,10 @@ const PersonalizedLearningSummaryDialog: React.FC<Props> = ({setShowEngagement})
         </DialogHeader>
         <div className="py-4">
           <p className="text-sm text-gray-500">
-            Here's your personalized learning summary: You excelled in Transformer
-            Architectures with 85% engagement. We've identified areas where you
-            could improve, and we've added refresher modules to your dashboard.
+            Here&#39;s your personalized learning summary: You excelled in
+            Transformer Architectures with 85% engagement. We&#39;ve identified
+            areas where you could improve, and we&#39;ve added refresher modules
+            to your dashboard.
           </p>
         </div>
         <DialogFooter className="flex justify-between">
