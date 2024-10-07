@@ -30,7 +30,7 @@ const Chatbot = (props: Props) => {
                 />
             </div>
             <div className="flex justify-end m-2">
-                <div className="flex justify-center items-center cursor-pointer z-1 relative rounded-full bg-blue-700 size-12 active:scale-90 duration-100" onClick={() => setIsAssistantToggle(!isAssistantToggle)}>
+                <div className="flex justify-center items-center cursor-pointer z-1 relative rounded-full bg-black size-12 active:scale-90 duration-100" onClick={() => setIsAssistantToggle(!isAssistantToggle)}>
                     {isAssistantToggle ? <ChevronDown color="white"/> : <MessageCircle color="white"/>}
                 </div>
             </div>
