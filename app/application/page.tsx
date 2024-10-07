@@ -694,7 +694,17 @@ export default function LecturePage() {
       <div className="fixed bottom-10 right-10 z-20">
         {isAssistantToggle && (
           <div className="bg-white border w-80 h-[400px] z-20">
-            <Thread runtime={runtime} />
+            <Thread 
+              runtime={runtime} 
+              // welcome={{
+              //   suggestions: [
+              //     {
+              //       text: 'Could you answer this question',
+              //       prompt: 'Could you answer this question'
+              //     },
+              //   ]
+              // }}
+            />
           </div>
         )}
         <div className="flex justify-end m-2">
