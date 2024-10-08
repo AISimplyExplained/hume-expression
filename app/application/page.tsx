@@ -52,6 +52,7 @@ import LevelDialog from "@/components/CustomDialogs/LevelDialog";
 import Chatbot from "@/components/Chatbot";
 import CourseFeedbackForm from "@/components/CourseFeedbackForm";
 import PersonalizedLearningSummaryDialog from "@/components/PersonalizedLearningSummaryDialog";
+import { updateStateOnServer } from "../actions";
 
 export type ChapterType = "video" | "text" | "quiz" | "game";
 
@@ -130,12 +131,12 @@ export default function LecturePage() {
   const [currentLesson, setCurrentLesson] = useState<string>(
     "Applied Transformer Architecture"
   );
-  const [energy, setEnergy] = useState<number>(0);
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
   const [showLevelUpgrade, setShowLevelUpgrade] = useState<boolean>(false);
   const [engagementHistory, setEngagementHistory] = useState<Point[]>([
     { time: "00:00:00", emotion: "Concentration", score: 0.0 },
   ]);
+  const [energy, setEnergy] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
   const [level, setLevel] = useState<number>(0);
   const { setTitle } = useTitleStore();
@@ -149,6 +150,16 @@ export default function LecturePage() {
     ],
     []
   );
+
+  // useEffect(() => {
+  //   const postToServer = async () => {
+  //     await updateStateOnServer(energy, streak, level);
+  //   };
+
+  //   postToServer();
+  // }, [energy, streak, level]);
+
+
 
   const curriculum: Module[] = [
     {

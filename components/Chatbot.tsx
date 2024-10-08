@@ -18,7 +18,7 @@ const Chatbot = (props: Props) => {
         <div className="fixed bottom-10 right-10 z-20">
             <div className={`bg-white border w-80 h-[400px] z-20 duration-100 ${isAssistantToggle ? "scale-100" : "scale-0"}`}>
                 <Thread 
-                    runtime={runtime} 
+                    // runtime={runtime} 
                     // welcome={{
                     //     suggestions: [
                     //     {

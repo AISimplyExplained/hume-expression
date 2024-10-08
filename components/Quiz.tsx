@@ -25,6 +25,7 @@ import {
 } from "./ui/dropdown-menu";
 import OpenAI from "openai";
 import { useModule } from "@/lib/store";
+import { updateCurrentQuestionOnServer } from "@/app/actions";
 
 const removeLastPart = (str: string): string => {
   const lastSpaceIndex = str.lastIndexOf(" ");
@@ -62,10 +63,19 @@ const Quiz: React.FC<QuizProps> = ({
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [hintLoading, setHintLoading] = useState(false);
   const [hint, setHint] = useState("");
+  
   useEffect(() => {
     setHint("");
     setHintLoading(false);
   }, [currentQuestion, selectedAnswer]);
+
+  useEffect(() => {
+    const postToServer = async () => {
+      await updateCurrentQuestionOnServer(questions[currentQuestion])
+    };
+    postToServer();
+  }, [currentQuestion])
+
   const { changeModuleFinished } = useModule();
 
   const handleAnswer = (answerIndex: number) => {
