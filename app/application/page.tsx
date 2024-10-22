@@ -53,6 +53,7 @@ import Chatbot from "@/components/Chatbot";
 import CourseFeedbackForm from "@/components/CourseFeedbackForm";
 import PersonalizedLearningSummaryDialog from "@/components/PersonalizedLearningSummaryDialog";
 import { updateStateOnServer } from "../actions";
+import SendGraph from "@/components/SendGraph";
 
 export type ChapterType = "video" | "text" | "quiz" | "game";
 
@@ -158,8 +159,6 @@ export default function LecturePage() {
 
   //   postToServer();
   // }, [energy, streak, level]);
-
-
 
   const curriculum: Module[] = [
     {
@@ -813,6 +812,7 @@ export default function LecturePage() {
                           </p>
                         </DialogDescription>
                         <ExpressionGraph
+                          sortedEmotion={sortedEmotions}
                           emotionMap={emotionMap}
                           engagementHistory={engagementHistory}
                           setEngagementHistory={setEngagementHistory}
@@ -968,7 +968,10 @@ export default function LecturePage() {
         <ConfidenceAssessment />
         <Chatbot />
         <CourseFeedbackForm />
-        <PersonalizedLearningSummaryDialog setShowEngagement={setShowEngagement} />
+        <PersonalizedLearningSummaryDialog
+          setShowEngagement={setShowEngagement}
+        />
+        <SendGraph sortedEmotion={sortedEmotions} isStreaming={isStreaming} />
       </div>
     </ErrorBoundary>
   );
