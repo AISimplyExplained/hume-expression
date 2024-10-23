@@ -43,7 +43,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { TimedFeedbackDialog } from "@/components/TimesFeedBack";
-import TimerDialog from "@/components/TimerDialog";
 import ConfidenceAssessment from "@/components/ConfidenceAssessment";
 import { EmotionName, Point } from "@/lib/types";
 import AchievementAlertDialog from "@/components/AchievementAlertDialog";
@@ -964,7 +963,6 @@ export default function LecturePage() {
           level={level}
           description={`Keep going to unlock more achievements!`}
         />
-        <TimerDialog isPlaying={isPlaying} />
         <ConfidenceAssessment />
         <Chatbot />
         <CourseFeedbackForm />
