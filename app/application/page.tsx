@@ -727,7 +727,7 @@ export default function LecturePage() {
                     height={30}
                     className="mr-2"
                   />
-                  ADAPTIVE LEARNING
+                  ADAPTIVE INTELLIGENCE
                 </Button>
                 <nav className="hidden md:flex space-x-2">
                   {renderNavigationItems}
