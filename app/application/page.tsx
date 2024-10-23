@@ -92,11 +92,16 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 function DarkModeToggle() {
   const { theme, setTheme } = useTheme();
 
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className=""
+      onClick={toggleTheme}
       aria-label="Toggle dark mode"
     >
       {theme === "dark" ? (
