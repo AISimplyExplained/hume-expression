@@ -11,7 +11,7 @@ interface Props {
 }
 export default function SendGraph({sortedEmotion, isStreaming}:Props) {
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       let selectedEmotion: Point | null = null;
       console.log("s", isStreaming, sortedEmotion)
       if(!isStreaming) return
@@ -26,7 +26,7 @@ export default function SendGraph({sortedEmotion, isStreaming}:Props) {
               score: sortedEmotion[i].score,
             };
             
-            insertData({
+            await insertData({
               date: date,
               emotion: selectedEmotion.emotion,
               score: selectedEmotion.score,
@@ -38,7 +38,7 @@ export default function SendGraph({sortedEmotion, isStreaming}:Props) {
           break;
         }
       }
-    }, 1000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [sortedEmotion, isStreaming]);
