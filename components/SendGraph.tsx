@@ -38,7 +38,7 @@ export default function SendGraph({sortedEmotion, isStreaming}:Props) {
           break;
         }
       }
-    }, 2000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [sortedEmotion, isStreaming]);
