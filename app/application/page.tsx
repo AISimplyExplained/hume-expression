@@ -53,6 +53,7 @@ import CourseFeedbackForm from "@/components/CourseFeedbackForm";
 import PersonalizedLearningSummaryDialog from "@/components/PersonalizedLearningSummaryDialog";
 import { updateStateOnServer } from "../actions";
 import SendGraph from "@/components/SendGraph";
+import EmotionSpiderChart from "@/components/EmotionSpider";
 
 export type ChapterType = "video" | "text" | "quiz" | "game";
 
@@ -975,6 +976,7 @@ export default function LecturePage() {
           setShowEngagement={setShowEngagement}
         />
         <SendGraph sortedEmotion={sortedEmotions} isStreaming={isStreaming} />
+        <EmotionSpiderChart sortedEmotions={sortedEmotions} />
       </div>
     </ErrorBoundary>
   );

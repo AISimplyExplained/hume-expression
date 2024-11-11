@@ -14,7 +14,7 @@ export default function SendGraph({sortedEmotion, isStreaming}:Props) {
     const interval = setInterval(async () => {
       let selectedEmotion: Point | null = null;
       console.log("s", isStreaming, sortedEmotion)
-      if(!isStreaming) return
+      // if(!isStreaming) return
       for (let i = 0; i < sortedEmotion.length; i++) {
         const emotion = sortedEmotion[i].emotion;
         for (let j = 0; j < emotions.length; j++) {
@@ -26,7 +26,7 @@ export default function SendGraph({sortedEmotion, isStreaming}:Props) {
               score: sortedEmotion[i].score,
             };
             
-            await insertData({
+            insertData({
               date: date,
               emotion: selectedEmotion.emotion,
               score: selectedEmotion.score,
@@ -38,7 +38,7 @@ export default function SendGraph({sortedEmotion, isStreaming}:Props) {
           break;
         }
       }
-    }, 1000);
+    }, 800);
 
     return () => clearInterval(interval);
   }, [sortedEmotion, isStreaming]);
